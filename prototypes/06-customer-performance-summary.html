@@ -1,0 +1,863 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype 06 — AI-Generated Site Performance Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --brand-50: #f3faf6;
+        --brand-100: #dcefe4;
+        --brand-200: #b7dac4;
+        --brand-500: #2f7a58;
+        --brand-600: #245f45;
+        --brand-700: #1d4d38;
+        --brand-800: #183e2f;
+        --brand-900: #122f24;
+        --phone-bg: #f4f7f5;
+        --surface: #ffffff;
+        --text-primary: #173025;
+        --shadow-card: 0 8px 24px rgba(13, 33, 24, 0.08);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        background: linear-gradient(170deg, #0d2118 0%, #091a12 50%, #06120d 100%);
+        color: #e8f0eb;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 48px 24px 56px;
+      }
+
+      /* ── slide header ── */
+      .slide-header {
+        text-align: center;
+        max-width: 540px;
+        margin-bottom: 36px;
+      }
+
+      .slide-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #6ea392;
+        margin-bottom: 12px;
+      }
+
+      .slide-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #ffffff;
+        margin-bottom: 14px;
+      }
+
+      .slide-subtitle {
+        font-size: 15px;
+        line-height: 1.55;
+        color: #8faa9e;
+      }
+
+      /* ── desktop frame ── */
+      .desktop-frame {
+        width: 960px;
+        border-radius: 16px;
+        background: #1e1e1e;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+
+      .window-chrome {
+        background: #1e1e1e;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 10px;
+      }
+
+      .traffic-lights {
+        display: flex;
+        gap: 7px;
+        flex-shrink: 0;
+      }
+
+      .traffic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .traffic-dot.red { background: #ff5f57; }
+      .traffic-dot.yellow { background: #ffbd2e; }
+      .traffic-dot.green { background: #28c840; }
+
+      .url-bar {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        background: #2c2c2c;
+        border-radius: 6px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 12px;
+        color: #8c8c8c;
+        font-family: inherit;
+      }
+
+      .url-bar .lock-icon {
+        margin-right: 6px;
+        font-size: 10px;
+        color: #6ea392;
+      }
+
+      .app-body {
+        display: flex;
+        min-height: 620px;
+      }
+
+      /* ── sidebar ── */
+      .sidebar {
+        width: 56px;
+        background: linear-gradient(180deg, #02120f 0%, #010a08 100%);
+        border-right: 1px solid #0f2f27;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 0;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: #4a7968;
+        cursor: default;
+        transition: background 0.15s;
+        position: relative;
+      }
+
+      .sidebar-icon.active {
+        background: rgba(47, 122, 88, 0.18);
+        color: #5ee4a0;
+        box-shadow: 0 0 12px rgba(94, 228, 160, 0.12);
+      }
+
+      .sidebar-icon .label {
+        position: absolute;
+        left: 50%;
+        top: calc(100% + 2px);
+        transform: translateX(-50%);
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        color: inherit;
+      }
+
+      .sidebar-divider {
+        width: 28px;
+        height: 1px;
+        background: #0f2f27;
+        margin: 6px 0;
+      }
+
+      /* ── content area ── */
+      .content-area {
+        flex: 1;
+        background: var(--phone-bg);
+        display: flex;
+        flex-direction: column;
+      }
+
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px;
+        border-bottom: 1px solid #e0e8e3;
+        background: var(--surface);
+      }
+
+      .site-toggle {
+        display: flex;
+        background: #edf2ef;
+        border-radius: 8px;
+        padding: 3px;
+        gap: 2px;
+      }
+
+      .site-toggle-btn {
+        padding: 7px 16px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        font-family: "Inter", sans-serif;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: #5a7368;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .site-toggle-btn.active {
+        background: var(--surface);
+        color: var(--text-primary);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        font-weight: 600;
+      }
+
+      .top-bar-right {
+        font-size: 12px;
+        color: #7a9488;
+      }
+
+      /* ── report card ── */
+      .report-scroll {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .report-card {
+        background: var(--surface);
+        border-radius: 12px;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        border: 1px solid #e4ece7;
+      }
+
+      /* header band */
+      .report-header {
+        background: linear-gradient(135deg, var(--brand-700) 0%, var(--brand-800) 100%);
+        padding: 28px 32px;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .verde-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 800;
+        color: #fff;
+        flex-shrink: 0;
+      }
+
+      .report-header-text {
+        flex: 1;
+      }
+
+      .report-header-brand {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-bottom: 2px;
+      }
+
+      .report-header-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 3px;
+      }
+
+      .report-header-meta {
+        font-size: 13px;
+        opacity: 0.75;
+      }
+
+      /* score section */
+      .score-section {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 36px 32px 28px;
+        gap: 24px;
+        border-bottom: 1px solid #edf2ef;
+      }
+
+      .score-ring-wrap {
+        position: relative;
+        width: 120px;
+        height: 120px;
+        flex-shrink: 0;
+      }
+
+      .score-ring-svg {
+        width: 120px;
+        height: 120px;
+        transform: rotate(-90deg);
+      }
+
+      .score-ring-bg {
+        fill: none;
+        stroke: #e8f0eb;
+        stroke-width: 8;
+      }
+
+      .score-ring-fill {
+        fill: none;
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s;
+      }
+
+      .score-ring-fill.good { stroke: var(--brand-500); }
+      .score-ring-fill.warn { stroke: #d4820a; }
+
+      .score-number {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 38px;
+        font-weight: 800;
+        color: var(--text-primary);
+      }
+
+      .score-details {
+        text-align: left;
+      }
+
+      .score-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #5a7368;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 4px;
+      }
+
+      .score-trend {
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .score-trend.up { color: var(--brand-500); }
+      .score-trend.down { color: #c0392b; }
+
+      /* metrics grid */
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-bottom: 1px solid #edf2ef;
+      }
+
+      .metric-col {
+        padding: 24px 28px;
+        text-align: center;
+        border-right: 1px solid #edf2ef;
+      }
+
+      .metric-col:last-child { border-right: none; }
+
+      .metric-heading {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: #7a9488;
+        margin-bottom: 10px;
+      }
+
+      .metric-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+        line-height: 1.1;
+      }
+
+      .metric-subtitle {
+        font-size: 12px;
+        color: #7a9488;
+        margin-bottom: 8px;
+        line-height: 1.4;
+      }
+
+      .metric-trend {
+        font-size: 12px;
+        line-height: 1.45;
+        color: #5a7368;
+      }
+
+      .metric-trend.positive { color: var(--brand-600); }
+      .metric-trend.negative { color: #c0392b; }
+
+      /* narrative */
+      .narrative-section {
+        padding: 28px 32px;
+        border-bottom: 1px solid #edf2ef;
+      }
+
+      .narrative-heading-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+
+      .narrative-heading {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .sage-chip {
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        background: var(--brand-50);
+        color: var(--brand-600);
+        padding: 3px 10px;
+        border-radius: 20px;
+        border: 1px solid var(--brand-200);
+      }
+
+      .narrative-text {
+        font-size: 13.5px;
+        line-height: 1.7;
+        color: #3a5a4a;
+      }
+
+      /* footer */
+      .report-footer {
+        padding: 20px 32px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 12px;
+        color: #8fa89a;
+        border-bottom: 1px solid #edf2ef;
+      }
+
+      /* actions */
+      .report-actions {
+        padding: 20px 32px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn {
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 22px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: none;
+      }
+
+      .btn-primary {
+        background: var(--brand-600);
+        color: #fff;
+      }
+
+      .btn-primary:hover { background: var(--brand-700); }
+
+      .btn-primary.sent {
+        background: var(--brand-500);
+        cursor: default;
+      }
+
+      .btn-outline {
+        background: transparent;
+        color: var(--brand-600);
+        border: 1.5px solid var(--brand-200);
+      }
+
+      .btn-outline:hover {
+        background: var(--brand-50);
+      }
+
+      /* edit panel */
+      .edit-panel {
+        padding: 0 32px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
+      }
+
+      .edit-panel.visible {
+        max-height: 200px;
+        padding: 0 32px 20px;
+      }
+
+      .edit-panel textarea {
+        width: 100%;
+        min-height: 80px;
+        border: 1.5px solid #d0ddd6;
+        border-radius: 8px;
+        padding: 12px 14px;
+        font-family: "Inter", sans-serif;
+        font-size: 13px;
+        color: var(--text-primary);
+        resize: vertical;
+        outline: none;
+        transition: border-color 0.2s;
+        margin-bottom: 10px;
+      }
+
+      .edit-panel textarea:focus {
+        border-color: var(--brand-500);
+      }
+
+      .edit-panel textarea::placeholder {
+        color: #9aada2;
+      }
+
+      .btn-small {
+        font-family: "Inter", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 7px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        border: none;
+        background: var(--brand-600);
+        color: #fff;
+        transition: all 0.2s;
+      }
+
+      .btn-small:hover { background: var(--brand-700); }
+
+      .feedback-sent {
+        display: none;
+        font-size: 12px;
+        color: var(--brand-600);
+        font-weight: 600;
+        margin-top: 6px;
+      }
+
+      .feedback-sent.visible { display: block; }
+
+      /* entrance animation */
+      @keyframes scoreEntrance {
+        0% { transform: scale(0); opacity: 0; }
+        60% { transform: scale(1.05); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+
+      .score-ring-wrap.animate {
+        animation: scoreEntrance 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      }
+
+      .score-ring-wrap.pre-animate {
+        transform: scale(0);
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── slide header ── -->
+    <div class="slide-header">
+      <div class="slide-kicker">HeySage — Customer / Client Contact</div>
+      <div class="slide-title">AI-Generated Site Performance Summary</div>
+      <div class="slide-subtitle">A professional, client-ready performance summary generated by AI — reviewed by the account manager and sent in minutes, not hours.</div>
+    </div>
+
+    <!-- ── desktop frame ── -->
+    <div class="desktop-frame">
+      <div class="window-chrome">
+        <div class="traffic-lights">
+          <span class="traffic-dot red"></span>
+          <span class="traffic-dot yellow"></span>
+          <span class="traffic-dot green"></span>
+        </div>
+        <div class="url-bar">
+          <span class="lock-icon">&#128274;</span>
+          app.heysage.com/documents/site-report
+        </div>
+      </div>
+
+      <div class="app-body">
+        <!-- sidebar -->
+        <div class="sidebar">
+          <div class="sidebar-icon" title="Home">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Inspections">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Work Items">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-icon active" title="Reports">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span class="label">Reports</span>
+          </div>
+          <div class="sidebar-icon" title="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+        </div>
+
+        <!-- content area -->
+        <div class="content-area">
+          <div class="top-bar">
+            <div class="site-toggle">
+              <button class="site-toggle-btn active" data-site="estrella">Estrella Community College</button>
+              <button class="site-toggle-btn" data-site="asu">ASU Downtown</button>
+            </div>
+            <div class="top-bar-right">Monthly Reports</div>
+          </div>
+
+          <div class="report-scroll">
+            <div class="report-card">
+              <!-- header band -->
+              <div class="report-header">
+                <div class="verde-badge">V</div>
+                <div class="report-header-text">
+                  <div class="report-header-brand">Verde</div>
+                  <div class="report-header-title">Monthly Site Performance Summary</div>
+                  <div class="report-header-meta" id="headerMeta">Estrella Community College · March 2026</div>
+                </div>
+              </div>
+
+              <!-- score -->
+              <div class="score-section">
+                <div class="score-ring-wrap pre-animate" id="scoreRing">
+                  <svg class="score-ring-svg" viewBox="0 0 120 120">
+                    <circle class="score-ring-bg" cx="60" cy="60" r="50"/>
+                    <circle class="score-ring-fill good" id="ringFill" cx="60" cy="60" r="50"
+                      stroke-dasharray="314.16"
+                      stroke-dashoffset="314.16"/>
+                  </svg>
+                  <div class="score-number" id="scoreNumber">88</div>
+                </div>
+                <div class="score-details">
+                  <div class="score-label">Overall SAGE Score</div>
+                  <div class="score-trend up" id="scoreTrend">▲ +3 from last month</div>
+                </div>
+              </div>
+
+              <!-- metrics -->
+              <div class="metrics-grid">
+                <div class="metric-col">
+                  <div class="metric-heading">Inspection Quality</div>
+                  <div class="metric-value" id="m1Value">94%</div>
+                  <div class="metric-subtitle" id="m1Sub">Coverage rate across all spaces</div>
+                  <div class="metric-trend positive" id="m1Trend">Up 6% from February, driven by consistent daily coverage</div>
+                </div>
+                <div class="metric-col">
+                  <div class="metric-heading">Work Item Resolution</div>
+                  <div class="metric-value" id="m2Value">1.8 days</div>
+                  <div class="metric-subtitle" id="m2Sub">Average resolution time</div>
+                  <div class="metric-trend positive" id="m2Trend">Improved from 2.4 days — all items resolved within SLA</div>
+                </div>
+                <div class="metric-col">
+                  <div class="metric-heading">Safety Record</div>
+                  <div class="metric-value" id="m3Value">0 incidents</div>
+                  <div class="metric-subtitle" id="m3Sub">Recordable incidents this month</div>
+                  <div class="metric-trend" id="m3Trend">1 near-miss reported and addressed same-day</div>
+                </div>
+              </div>
+
+              <!-- narrative -->
+              <div class="narrative-section">
+                <div class="narrative-heading-row">
+                  <div class="narrative-heading">Performance Summary</div>
+                  <div class="sage-chip">Generated by SAGE</div>
+                </div>
+                <div class="narrative-text" id="narrativeText">
+                  Inspection scores at Estrella Community College improved 6% this month, driven by consistent daily coverage in high-traffic areas. All work items were resolved within the contracted SLA for the first time this quarter. One safety near-miss was identified during a routine walkthrough and resolved same-day, reflecting strong field awareness and proactive reporting culture. Verde recommends maintaining current staffing levels and continuing the daily touchpoint protocol that has driven these results.
+                </div>
+              </div>
+
+              <!-- footer -->
+              <div class="report-footer">
+                <span>Prepared by Verde Facilities Management</span>
+                <span>Reviewed by Sarah Chen, Account Manager</span>
+              </div>
+
+              <!-- actions -->
+              <div class="report-actions">
+                <button class="btn btn-primary" id="btnApprove">Approve &amp; Send</button>
+                <button class="btn btn-outline" id="btnEdit">Request Edit</button>
+              </div>
+
+              <!-- edit panel -->
+              <div class="edit-panel" id="editPanel">
+                <textarea placeholder="Describe the changes you'd like made to this summary…"></textarea>
+                <button class="btn-small" id="btnSubmitFeedback">Submit feedback</button>
+                <div class="feedback-sent" id="feedbackSent">Feedback submitted ✓</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const SITES = {
+        estrella: {
+          name: "Estrella Community College",
+          meta: "Estrella Community College · March 2026",
+          score: 88,
+          scoreClass: "good",
+          trend: "▲ +3 from last month",
+          trendClass: "up",
+          m1: { value: "94%", sub: "Coverage rate across all spaces", trend: "Up 6% from February, driven by consistent daily coverage", cls: "positive" },
+          m2: { value: "1.8 days", sub: "Average resolution time", trend: "Improved from 2.4 days — all items resolved within SLA", cls: "positive" },
+          m3: { value: "0 incidents", sub: "Recordable incidents this month", trend: "1 near-miss reported and addressed same-day", cls: "" },
+          narrative: "Inspection scores at Estrella Community College improved 6% this month, driven by consistent daily coverage in high-traffic areas. All work items were resolved within the contracted SLA for the first time this quarter. One safety near-miss was identified during a routine walkthrough and resolved same-day, reflecting strong field awareness and proactive reporting culture. Verde recommends maintaining current staffing levels and continuing the daily touchpoint protocol that has driven these results."
+        },
+        asu: {
+          name: "ASU Downtown",
+          meta: "ASU Downtown · March 2026",
+          score: 72,
+          scoreClass: "warn",
+          trend: "▼ −5 from last month",
+          trendClass: "down",
+          m1: { value: "78%", sub: "Coverage rate across all spaces", trend: "Below target — joint inspection frequency needs attention", cls: "negative" },
+          m2: { value: "4.2 days", sub: "Average resolution time", trend: "Above SLA target of 3 days — 4 items currently overdue", cls: "negative" },
+          m3: { value: "1 recordable", sub: "Slip and fall incident under investigation", trend: "Slip and fall incident near loading dock under active investigation", cls: "negative" },
+          narrative: "ASU Downtown experienced a challenging month with inspection coverage falling below the 80% target due to scheduling gaps in joint inspections. Four work items remain overdue in Building B, with the oldest at 12 days. A recordable safety incident involving a slip and fall near the loading dock is under active investigation. Verde has initiated corrective actions including additional joint inspection sessions and an expedited work item resolution plan to bring the site back to target by mid-April."
+        }
+      };
+
+      const CIRCUMFERENCE = 2 * Math.PI * 50; // ≈ 314.16
+      let currentSite = "estrella";
+
+      const $ = (id) => document.getElementById(id);
+
+      function setScore(score, cls) {
+        const ring = $("scoreRing");
+        const fill = $("ringFill");
+        const num = $("scoreNumber");
+
+        const offset = CIRCUMFERENCE - (score / 100) * CIRCUMFERENCE;
+        fill.setAttribute("stroke-dashoffset", CIRCUMFERENCE);
+        fill.classList.remove("good", "warn");
+        fill.classList.add(cls);
+        num.textContent = score;
+
+        ring.classList.remove("animate");
+        ring.classList.add("pre-animate");
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            ring.classList.remove("pre-animate");
+            ring.classList.add("animate");
+            fill.setAttribute("stroke-dashoffset", offset);
+          });
+        });
+      }
+
+      function loadSite(key) {
+        const s = SITES[key];
+        currentSite = key;
+
+        $("headerMeta").textContent = s.meta;
+        $("scoreTrend").textContent = s.trend;
+        $("scoreTrend").className = "score-trend " + s.trendClass;
+
+        $("m1Value").textContent = s.m1.value;
+        $("m1Sub").textContent = s.m1.sub;
+        $("m1Trend").textContent = s.m1.trend;
+        $("m1Trend").className = "metric-trend " + s.m1.cls;
+
+        $("m2Value").textContent = s.m2.value;
+        $("m2Sub").textContent = s.m2.sub;
+        $("m2Trend").textContent = s.m2.trend;
+        $("m2Trend").className = "metric-trend " + s.m2.cls;
+
+        $("m3Value").textContent = s.m3.value;
+        $("m3Sub").textContent = s.m3.sub;
+        $("m3Trend").textContent = s.m3.trend;
+        $("m3Trend").className = "metric-trend " + s.m3.cls;
+
+        $("narrativeText").textContent = s.narrative;
+
+        setScore(s.score, s.scoreClass);
+
+        // reset action states
+        $("btnApprove").textContent = "Approve & Send";
+        $("btnApprove").classList.remove("sent");
+        $("btnApprove").disabled = false;
+        $("editPanel").classList.remove("visible");
+        $("feedbackSent").classList.remove("visible");
+        var ta = $("editPanel").querySelector("textarea");
+        if (ta) ta.value = "";
+      }
+
+      // site toggle
+      document.querySelectorAll(".site-toggle-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          document.querySelectorAll(".site-toggle-btn").forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          loadSite(btn.dataset.site);
+          var scroll = document.querySelector(".report-scroll");
+          if (scroll) scroll.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      // approve
+      $("btnApprove").addEventListener("click", function () {
+        if (this.classList.contains("sent")) return;
+        var now = new Date();
+        var ts = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        this.textContent = "Sent to customer \u2713 " + ts;
+        this.classList.add("sent");
+        this.disabled = true;
+      });
+
+      // request edit
+      $("btnEdit").addEventListener("click", function () {
+        var panel = $("editPanel");
+        panel.classList.toggle("visible");
+        $("feedbackSent").classList.remove("visible");
+        if (panel.classList.contains("visible")) {
+          setTimeout(function () {
+            panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+          }, 100);
+        }
+      });
+
+      // submit feedback
+      $("btnSubmitFeedback").addEventListener("click", function () {
+        var ta = $("editPanel").querySelector("textarea");
+        if (!ta.value.trim()) return;
+        $("feedbackSent").classList.add("visible");
+        ta.value = "";
+      });
+
+      // initial load
+      loadSite("estrella");
+    </script>
+  </body>
+</html>

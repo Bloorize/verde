@@ -1,0 +1,1107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype 04 — Automated Incident Severity Classification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --brand-50: #f3faf6;
+        --brand-100: #dcefe4;
+        --brand-200: #b7dac4;
+        --brand-500: #2f7a58;
+        --brand-600: #245f45;
+        --brand-700: #1d4d38;
+        --brand-800: #183e2f;
+        --brand-900: #122f24;
+        --phone-bg: #f4f7f5;
+        --surface: #ffffff;
+        --text-primary: #173025;
+        --shadow-card: 0 8px 24px rgba(13, 33, 24, 0.08);
+
+        --amber-50: #fffbeb;
+        --amber-100: #fef3c7;
+        --amber-500: #f59e0b;
+        --amber-600: #d97706;
+        --amber-700: #b45309;
+        --amber-800: #92400e;
+        --blue-50: #eff6ff;
+        --blue-500: #3b82f6;
+        --blue-600: #2563eb;
+        --blue-700: #1d4ed8;
+        --red-50: #fef2f2;
+        --red-500: #ef4444;
+        --red-600: #dc2626;
+        --red-700: #b91c1c;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        background: linear-gradient(170deg, #0d2118 0%, #091a12 50%, #06120d 100%);
+        color: #e8f0eb;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 48px 24px 56px;
+      }
+
+      /* ── slide header ── */
+      .slide-header {
+        text-align: center;
+        max-width: 620px;
+        margin-bottom: 36px;
+      }
+
+      .slide-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #6ea392;
+        margin-bottom: 12px;
+      }
+
+      .slide-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #ffffff;
+        margin-bottom: 14px;
+      }
+
+      .slide-subtitle {
+        font-size: 15px;
+        line-height: 1.55;
+        color: #8faa9e;
+      }
+
+      /* ── incident toggle ── */
+      .incident-toggle {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.06);
+        border-radius: 10px;
+        padding: 4px;
+      }
+
+      .incident-toggle button {
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 18px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+        white-space: nowrap;
+      }
+
+      .incident-toggle button.active {
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+      }
+
+      .incident-toggle button.inactive {
+        background: transparent;
+        color: #6ea392;
+      }
+
+      /* ── desktop frame ── */
+      .desktop-frame {
+        width: 960px;
+        border-radius: 16px;
+        background: #1e1e1e;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+
+      /* window chrome */
+      .window-chrome {
+        background: #1e1e1e;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 10px;
+      }
+
+      .traffic-lights {
+        display: flex;
+        gap: 7px;
+        flex-shrink: 0;
+      }
+
+      .traffic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .traffic-dot.red { background: #ff5f57; }
+      .traffic-dot.yellow { background: #ffbd2e; }
+      .traffic-dot.green { background: #28c840; }
+
+      .url-bar {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        background: #2c2c2c;
+        border-radius: 6px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 12px;
+        color: #8c8c8c;
+        font-family: inherit;
+      }
+
+      .url-bar .lock-icon {
+        margin-right: 6px;
+        font-size: 10px;
+        color: #6ea392;
+      }
+
+      /* app body */
+      .app-body {
+        display: flex;
+        min-height: 620px;
+      }
+
+      /* sidebar */
+      .sidebar {
+        width: 56px;
+        background: linear-gradient(180deg, #02120f 0%, #010a08 100%);
+        border-right: 1px solid #0f2f27;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 0;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: #4a7968;
+        cursor: default;
+        transition: background 0.15s;
+        position: relative;
+      }
+
+      .sidebar-icon.active {
+        background: rgba(47, 122, 88, 0.18);
+        color: #5ee4a0;
+        box-shadow: 0 0 12px rgba(94, 228, 160, 0.12);
+      }
+
+      .sidebar-icon .label {
+        position: absolute;
+        left: 50%;
+        top: calc(100% + 2px);
+        transform: translateX(-50%);
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        color: inherit;
+      }
+
+      .sidebar-divider {
+        width: 28px;
+        height: 1px;
+        background: #0f2f27;
+        margin: 6px 0;
+      }
+
+      /* main content area */
+      .main-content {
+        flex: 1;
+        background: var(--phone-bg);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
+
+      /* top bar */
+      .top-bar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--brand-100);
+        padding: 12px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .site-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--brand-50);
+        border: 1px solid var(--brand-100);
+        border-radius: 999px;
+        padding: 6px 16px 6px 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--brand-700);
+      }
+
+      .site-pill-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--brand-500);
+      }
+
+      .top-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: var(--brand-600);
+        color: #fff;
+        font-size: 12px;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+      }
+
+      /* scrollable inner */
+      .content-scroll {
+        flex: 1;
+        padding: 28px;
+        padding-bottom: 80px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .page-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+
+      .page-case-id {
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b8078;
+        margin-bottom: 24px;
+      }
+
+      /* ── case detail card ── */
+      .case-card {
+        background: var(--surface);
+        border: 1px solid var(--brand-100);
+        border-radius: 16px;
+        box-shadow: var(--shadow-card);
+        padding: 22px 24px;
+        margin-bottom: 20px;
+      }
+
+      .case-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 14px;
+      }
+
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .meta-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      .meta-badge.amber {
+        background: var(--amber-50);
+        color: var(--amber-700);
+        border: 1px solid var(--amber-100);
+      }
+
+      .meta-badge.blue {
+        background: var(--blue-50);
+        color: var(--blue-700);
+        border: 1px solid #dbeafe;
+      }
+
+      .meta-label {
+        font-size: 12px;
+        color: #6b8078;
+      }
+
+      .meta-label strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      .meta-sep {
+        width: 1px;
+        height: 16px;
+        background: var(--brand-100);
+      }
+
+      .case-description {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #3a5c4e;
+        border-top: 1px solid var(--brand-100);
+        padding-top: 14px;
+      }
+
+      /* ── AI triage card ── */
+      .ai-triage {
+        background: var(--surface);
+        border-radius: 16px;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        margin-bottom: 20px;
+        transition: border-color 0.3s;
+      }
+
+      .ai-triage.severity-recordable {
+        border: 1px solid var(--amber-100);
+      }
+
+      .ai-triage.severity-firstaid {
+        border: 1px solid #dbeafe;
+      }
+
+      .ai-triage.severity-serious {
+        border: 1px solid #fecaca;
+      }
+
+      .ai-triage.confirmed {
+        border-color: var(--brand-200) !important;
+      }
+
+      .ai-triage-header {
+        padding: 14px 22px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        transition: background 0.3s;
+      }
+
+      .ai-triage.severity-recordable .ai-triage-header {
+        background: linear-gradient(90deg, #fffbeb 0%, #fef9f0 100%);
+      }
+
+      .ai-triage.severity-firstaid .ai-triage-header {
+        background: linear-gradient(90deg, #eff6ff 0%, #f5f8ff 100%);
+      }
+
+      .ai-triage.severity-serious .ai-triage-header {
+        background: linear-gradient(90deg, #fef2f2 0%, #fef5f5 100%);
+      }
+
+      .ai-triage.confirmed .ai-triage-header {
+        background: linear-gradient(90deg, var(--brand-50) 0%, #f0faf4 100%) !important;
+      }
+
+      .ai-triage-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        flex-shrink: 0;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .severity-recordable .ai-triage-icon {
+        background: var(--amber-500);
+        color: #fff;
+      }
+
+      .severity-firstaid .ai-triage-icon {
+        background: var(--blue-500);
+        color: #fff;
+      }
+
+      .severity-serious .ai-triage-icon {
+        background: var(--red-500);
+        color: #fff;
+      }
+
+      .confirmed .ai-triage-icon {
+        background: var(--brand-600) !important;
+        color: #fff;
+      }
+
+      .ai-triage-label {
+        font-size: 13px;
+        font-weight: 700;
+        transition: color 0.3s;
+      }
+
+      .severity-recordable .ai-triage-label { color: var(--amber-700); }
+      .severity-firstaid .ai-triage-label { color: var(--blue-700); }
+      .severity-serious .ai-triage-label { color: var(--red-700); }
+      .confirmed .ai-triage-label { color: var(--brand-700) !important; }
+
+      .ai-triage-body {
+        padding: 24px;
+      }
+
+      /* severity badge */
+      .severity-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 28px;
+        border-radius: 999px;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+      }
+
+      .severity-badge.recordable {
+        background: #fef3c7;
+        color: var(--amber-800);
+        border: 2px solid var(--amber-500);
+      }
+
+      .severity-badge.firstaid {
+        background: #dbeafe;
+        color: var(--blue-700);
+        border: 2px solid var(--blue-500);
+      }
+
+      .severity-badge.serious {
+        background: #fecaca;
+        color: var(--red-700);
+        border: 2px solid var(--red-500);
+      }
+
+      .severity-badge.confirmed-badge {
+        border-color: var(--brand-500) !important;
+        background: var(--brand-50) !important;
+      }
+
+      .ai-rationale {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #3a5c4e;
+        margin-bottom: 20px;
+      }
+
+      /* confidence */
+      .confidence-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 24px;
+      }
+
+      .confidence-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #6b8078;
+        white-space: nowrap;
+      }
+
+      .confidence-bar-bg {
+        flex: 1;
+        max-width: 180px;
+        height: 6px;
+        border-radius: 999px;
+        background: #e8ede9;
+        overflow: hidden;
+      }
+
+      .confidence-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        transition: width 0.4s, background 0.3s;
+      }
+
+      .confidence-bar-fill.amber { background: var(--amber-500); }
+      .confidence-bar-fill.blue { background: var(--blue-500); }
+      .confidence-bar-fill.red { background: var(--red-500); }
+
+      /* checklist */
+      .checklist-title {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #6b8078;
+        margin-bottom: 12px;
+      }
+
+      .checklist {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 24px;
+      }
+
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .check-icon {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+
+      .check-icon.done {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .check-icon.pending {
+        background: #fff7ed;
+        border: 1.5px solid #fdba74;
+        color: #c2410c;
+        animation: pulse-glow 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse-glow {
+        0%, 100% {
+          box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
+        }
+        50% {
+          box-shadow: 0 0 0 4px rgba(251, 146, 60, 0.18);
+        }
+      }
+
+      .checklist-item.pending-item {
+        color: #92400e;
+      }
+
+      /* action buttons */
+      .action-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-top: 1px solid var(--brand-100);
+        padding-top: 20px;
+        position: relative;
+      }
+
+      .btn-primary {
+        border: 0;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        background: var(--brand-600);
+        color: #fff;
+        transition: background 0.2s, transform 0.1s;
+      }
+
+      .btn-primary:hover { background: var(--brand-700); }
+      .btn-primary:active { transform: scale(0.97); }
+
+      .btn-primary.accepted {
+        background: #166534;
+        pointer-events: none;
+      }
+
+      .btn-outline {
+        border: 1.5px solid var(--brand-200);
+        border-radius: 10px;
+        padding: 11px 20px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        background: transparent;
+        color: var(--brand-700);
+        transition: background 0.15s, border-color 0.15s;
+      }
+
+      .btn-outline:hover {
+        background: var(--brand-50);
+        border-color: var(--brand-500);
+      }
+
+      .btn-ghost {
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 16px;
+        font-family: inherit;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        background: transparent;
+        color: #6b8078;
+        transition: color 0.15s, background 0.15s;
+      }
+
+      .btn-ghost:hover {
+        color: var(--brand-700);
+        background: var(--brand-50);
+      }
+
+      /* override dropdown */
+      .override-dropdown {
+        position: absolute;
+        top: calc(100% - 8px);
+        left: 140px;
+        background: var(--surface);
+        border: 1px solid var(--brand-100);
+        border-radius: 12px;
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+        padding: 6px;
+        display: none;
+        z-index: 10;
+        min-width: 180px;
+      }
+
+      .override-dropdown.show {
+        display: block;
+        animation: fadeIn 0.15s ease;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-4px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      .override-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        border: 0;
+        background: transparent;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: background 0.12s;
+      }
+
+      .override-option:hover {
+        background: var(--brand-50);
+      }
+
+      .override-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .override-dot.blue { background: var(--blue-500); }
+      .override-dot.amber { background: var(--amber-500); }
+      .override-dot.red { background: var(--red-500); }
+
+      /* shimmer animation on load */
+      .ai-triage.shimmer {
+        animation: card-glow 1.8s ease-in-out 2;
+      }
+
+      @keyframes card-glow {
+        0% { box-shadow: var(--shadow-card); }
+        40% { box-shadow: var(--shadow-card), 0 0 0 4px rgba(245, 158, 11, 0.14); }
+        100% { box-shadow: var(--shadow-card); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-header">
+      <p class="slide-kicker">HeySage &mdash; EHS Function</p>
+      <h1 class="slide-title">Automated Incident Severity Classification</h1>
+      <p class="slide-subtitle">
+        When an incident is submitted, AI reads the description and suggests a
+        severity level &mdash; helping EHS prioritize response immediately.
+      </p>
+    </div>
+
+    <!-- incident toggle -->
+    <div class="incident-toggle" id="incidentToggle">
+      <button class="active" data-idx="0">Slip &amp; Fall &mdash; Building A</button>
+      <button class="inactive" data-idx="1">Chemical Splash &mdash; Building C</button>
+    </div>
+
+    <div class="desktop-frame">
+      <!-- window chrome -->
+      <div class="window-chrome">
+        <div class="traffic-lights">
+          <span class="traffic-dot red"></span>
+          <span class="traffic-dot yellow"></span>
+          <span class="traffic-dot green"></span>
+        </div>
+        <div class="url-bar">
+          <span class="lock-icon">&#128274;</span>
+          <span id="urlBar">app.heysage.com/cases/INC-0891</span>
+        </div>
+      </div>
+
+      <!-- app body -->
+      <div class="app-body">
+        <!-- sidebar -->
+        <div class="sidebar">
+          <div class="sidebar-icon" title="Home">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Inspections">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="sidebar-icon active" title="Work Items">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <span class="label">Cases</span>
+          </div>
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-icon" title="Reports">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+        </div>
+
+        <!-- main content -->
+        <div class="main-content">
+          <div class="top-bar">
+            <div class="site-pill">
+              <span class="site-pill-dot"></span>
+              Estrella Community College
+            </div>
+            <div class="top-bar-right">
+              <span class="avatar">TS</span>
+            </div>
+          </div>
+
+          <div class="content-scroll">
+            <h2 class="page-title">Incident Review</h2>
+            <div class="page-case-id" id="pageCaseId">INC-0891</div>
+
+            <!-- case detail card -->
+            <div class="case-card">
+              <h3 class="case-title" id="caseTitle">Slip and fall near loading dock &mdash; Building A</h3>
+              <div class="meta-row">
+                <span class="meta-badge amber" id="typeBadge">Safety Concern</span>
+                <span class="meta-badge blue" id="statusBadge">New</span>
+                <span class="meta-sep"></span>
+                <span class="meta-label">Submitted by <strong id="submitter">Maria Santos</strong></span>
+                <span class="meta-sep"></span>
+                <span class="meta-label" id="submitTime">Today, 10:23 AM</span>
+              </div>
+              <p class="case-description" id="caseDesc">
+                Employee slipped on wet floor near the loading dock entrance.
+                Reported knee pain and received ice pack from on-site first aid kit.
+                Employee continued working after 15-minute rest.
+              </p>
+            </div>
+
+            <!-- AI triage card -->
+            <div class="ai-triage severity-recordable shimmer" id="aiTriage">
+              <div class="ai-triage-header">
+                <span class="ai-triage-icon">&#10022;</span>
+                <span class="ai-triage-label">SAGE &mdash; Severity Classification</span>
+              </div>
+              <div class="ai-triage-body">
+                <div class="severity-badge recordable" id="severityBadge">RECORDABLE</div>
+
+                <p class="ai-rationale" id="aiRationale">
+                  Based on the description, this incident involved a slip and fall
+                  resulting in a knee injury that required first aid treatment. The
+                  employee continued working, but any injury requiring treatment
+                  beyond basic first aid is classified as Recordable under OSHA guidelines.
+                </p>
+
+                <div class="confidence-row">
+                  <span class="confidence-label" id="confidenceLabel">Confidence: High (92%)</span>
+                  <div class="confidence-bar-bg">
+                    <div class="confidence-bar-fill amber" id="confidenceBar" style="width:92%"></div>
+                  </div>
+                </div>
+
+                <div class="checklist-title">Required Steps</div>
+                <ul class="checklist" id="checklist">
+                  <li class="checklist-item">
+                    <span class="check-icon done">&#10003;</span>
+                    First aid administered
+                  </li>
+                  <li class="checklist-item">
+                    <span class="check-icon done">&#10003;</span>
+                    Supervisor notified
+                  </li>
+                  <li class="checklist-item">
+                    <span class="check-icon done">&#10003;</span>
+                    Employee statement collected
+                  </li>
+                  <li class="checklist-item pending-item">
+                    <span class="check-icon pending">&#9744;</span>
+                    OSHA 300 log entry
+                  </li>
+                  <li class="checklist-item pending-item">
+                    <span class="check-icon pending">&#9744;</span>
+                    Follow-up within 24 hours
+                  </li>
+                  <li class="checklist-item pending-item">
+                    <span class="check-icon pending">&#9744;</span>
+                    Root cause investigation initiated
+                  </li>
+                </ul>
+
+                <div class="action-row" id="actionRow">
+                  <button class="btn-primary" id="acceptBtn">Accept Classification</button>
+                  <button class="btn-outline" id="overrideBtn">Override</button>
+                  <button class="btn-ghost" id="addNotesBtn">Add Notes</button>
+
+                  <div class="override-dropdown" id="overrideDropdown">
+                    <button class="override-option" data-severity="firstaid">
+                      <span class="override-dot blue"></span>
+                      First Aid
+                    </button>
+                    <button class="override-option" data-severity="recordable">
+                      <span class="override-dot amber"></span>
+                      Recordable
+                    </button>
+                    <button class="override-option" data-severity="serious">
+                      <span class="override-dot red"></span>
+                      Serious
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const incidents = [
+        {
+          caseId: "INC-0891",
+          url: "app.heysage.com/cases/INC-0891",
+          title: "Slip and fall near loading dock \u2014 Building A",
+          type: "Safety Concern",
+          typeCls: "amber",
+          status: "New",
+          statusCls: "blue",
+          submitter: "Maria Santos",
+          time: "Today, 10:23 AM",
+          description: "Employee slipped on wet floor near the loading dock entrance. Reported knee pain and received ice pack from on-site first aid kit. Employee continued working after 15-minute rest.",
+          severity: "recordable",
+          severityLabel: "RECORDABLE",
+          rationale: "Based on the description, this incident involved a slip and fall resulting in a knee injury that required first aid treatment. The employee continued working, but any injury requiring treatment beyond basic first aid is classified as Recordable under OSHA guidelines.",
+          confidence: 92,
+          confidenceText: "Confidence: High (92%)",
+          steps: [
+            { text: "First aid administered", done: true },
+            { text: "Supervisor notified", done: true },
+            { text: "Employee statement collected", done: true },
+            { text: "OSHA 300 log entry", done: false },
+            { text: "Follow-up within 24 hours", done: false },
+            { text: "Root cause investigation initiated", done: false }
+          ]
+        },
+        {
+          caseId: "INC-0904",
+          url: "app.heysage.com/cases/INC-0904",
+          title: "Chemical splash near cleaning station \u2014 Building C",
+          type: "Hazardous Material",
+          typeCls: "amber",
+          status: "New",
+          statusCls: "blue",
+          submitter: "James Okafor",
+          time: "Today, 11:47 AM",
+          description: "Employee splashed diluted cleaning solution on forearm while refilling dispenser. Area was rinsed with water for 5 minutes at the eyewash station. No redness or irritation observed after rinsing. Employee returned to normal duties.",
+          severity: "firstaid",
+          severityLabel: "FIRST AID",
+          rationale: "The incident involved minor skin contact with a diluted cleaning agent. The affected area was rinsed promptly and no lasting irritation was observed. Since the treatment consisted only of flushing with water \u2014 which qualifies as basic first aid \u2014 this does not meet the threshold for OSHA recordability.",
+          confidence: 88,
+          confidenceText: "Confidence: High (88%)",
+          steps: [
+            { text: "First aid administered", done: true },
+            { text: "Supervisor notified", done: true },
+            { text: "Employee statement collected", done: false },
+            { text: "SDS reviewed for chemical", done: true },
+            { text: "Follow-up within 24 hours", done: false },
+            { text: "Root cause investigation initiated", done: false }
+          ]
+        }
+      ];
+
+      const severityClasses = { firstaid: "firstaid", recordable: "recordable", serious: "serious" };
+      const severityLabels = { firstaid: "FIRST AID", recordable: "RECORDABLE", serious: "SERIOUS" };
+      const barColors = { firstaid: "blue", recordable: "amber", serious: "red" };
+
+      let activeIncident = 0;
+      let isAccepted = false;
+
+      const $ = (id) => document.getElementById(id);
+
+      function renderChecklist(steps) {
+        const ul = $("checklist");
+        ul.innerHTML = "";
+        steps.forEach((s) => {
+          const li = document.createElement("li");
+          li.className = "checklist-item" + (s.done ? "" : " pending-item");
+          const icon = document.createElement("span");
+          icon.className = "check-icon " + (s.done ? "done" : "pending");
+          icon.innerHTML = s.done ? "&#10003;" : "&#9744;";
+          li.appendChild(icon);
+          li.appendChild(document.createTextNode(" " + s.text));
+          ul.appendChild(li);
+        });
+      }
+
+      function setSeverity(sev, confirmed) {
+        const card = $("aiTriage");
+        const badge = $("severityBadge");
+        const bar = $("confidenceBar");
+
+        card.className = "ai-triage severity-" + sev + (confirmed ? " confirmed" : "");
+
+        badge.className = "severity-badge " + sev + (confirmed ? " confirmed-badge" : "");
+        badge.textContent = (confirmed ? "CONFIRMED: " : "") + severityLabels[sev];
+
+        bar.className = "confidence-bar-fill " + barColors[sev];
+      }
+
+      function renderIncident(idx) {
+        const inc = incidents[idx];
+        activeIncident = idx;
+        isAccepted = false;
+
+        $("urlBar").textContent = inc.url;
+        $("pageCaseId").textContent = inc.caseId;
+        $("caseTitle").innerHTML = inc.title.replace("\u2014", "&mdash;");
+        $("typeBadge").textContent = inc.type;
+        $("typeBadge").className = "meta-badge " + inc.typeCls;
+        $("statusBadge").textContent = inc.status;
+        $("statusBadge").className = "meta-badge " + inc.statusCls;
+        $("submitter").textContent = inc.submitter;
+        $("submitTime").textContent = inc.time;
+        $("caseDesc").textContent = inc.description;
+
+        setSeverity(inc.severity, false);
+        $("aiRationale").textContent = inc.rationale;
+        $("confidenceLabel").textContent = inc.confidenceText;
+        $("confidenceBar").style.width = inc.confidence + "%";
+
+        renderChecklist(inc.steps);
+
+        $("acceptBtn").textContent = "Accept Classification";
+        $("acceptBtn").className = "btn-primary";
+        $("overrideDropdown").classList.remove("show");
+
+        // toggle buttons
+        document.querySelectorAll("#incidentToggle button").forEach((btn) => {
+          const isActive = parseInt(btn.dataset.idx) === idx;
+          btn.className = isActive ? "active" : "inactive";
+        });
+
+        // re-trigger shimmer
+        const card = $("aiTriage");
+        card.classList.remove("shimmer");
+        void card.offsetWidth;
+        card.classList.add("shimmer");
+      }
+
+      // incident toggle
+      document.querySelectorAll("#incidentToggle button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          renderIncident(parseInt(btn.dataset.idx));
+          const scroll = document.querySelector(".content-scroll");
+          if (scroll) scroll.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      // accept
+      $("acceptBtn").addEventListener("click", () => {
+        if (isAccepted) return;
+        isAccepted = true;
+        const inc = incidents[activeIncident];
+        const currentSev = $("severityBadge").textContent.replace("CONFIRMED: ", "").trim();
+        const sevKey = Object.keys(severityLabels).find((k) => severityLabels[k] === currentSev) || inc.severity;
+
+        setSeverity(sevKey, true);
+        $("acceptBtn").textContent = "Accepted \u2713";
+        $("acceptBtn").className = "btn-primary accepted";
+        $("overrideDropdown").classList.remove("show");
+      });
+
+      // override toggle
+      $("overrideBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        $("overrideDropdown").classList.toggle("show");
+      });
+
+      // override selection
+      document.querySelectorAll(".override-option").forEach((opt) => {
+        opt.addEventListener("click", () => {
+          const sev = opt.dataset.severity;
+          isAccepted = false;
+          setSeverity(sev, false);
+          $("acceptBtn").textContent = "Accept Classification";
+          $("acceptBtn").className = "btn-primary";
+          $("overrideDropdown").classList.remove("show");
+        });
+      });
+
+      // close dropdown on outside click
+      document.addEventListener("click", (e) => {
+        if (!$("overrideBtn").contains(e.target) && !$("overrideDropdown").contains(e.target)) {
+          $("overrideDropdown").classList.remove("show");
+        }
+      });
+
+      renderIncident(0);
+    </script>
+  </body>
+</html>

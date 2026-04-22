@@ -1,0 +1,838 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype 05 — Automated Monthly Operational Narrative</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --brand-50: #f3faf6;
+        --brand-100: #dcefe4;
+        --brand-200: #b7dac4;
+        --brand-500: #2f7a58;
+        --brand-600: #245f45;
+        --brand-700: #1d4d38;
+        --brand-800: #183e2f;
+        --brand-900: #122f24;
+        --phone-bg: #f4f7f5;
+        --surface: #ffffff;
+        --text-primary: #173025;
+        --shadow-card: 0 8px 24px rgba(13, 33, 24, 0.08);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        background: linear-gradient(170deg, #0d2118 0%, #091a12 50%, #06120d 100%);
+        color: #e8f0eb;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 48px 24px 56px;
+      }
+
+      /* ── slide header ── */
+      .slide-header {
+        text-align: center;
+        max-width: 600px;
+        margin-bottom: 36px;
+      }
+
+      .slide-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #6ea392;
+        margin-bottom: 12px;
+      }
+
+      .slide-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #ffffff;
+        margin-bottom: 14px;
+      }
+
+      .slide-subtitle {
+        font-size: 15px;
+        line-height: 1.55;
+        color: #8faa9e;
+      }
+
+      /* ── desktop frame ── */
+      .desktop-frame {
+        width: 960px;
+        border-radius: 16px;
+        background: #1e1e1e;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+
+      /* ── window chrome ── */
+      .window-chrome {
+        background: #1e1e1e;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 10px;
+      }
+
+      .traffic-lights {
+        display: flex;
+        gap: 7px;
+        flex-shrink: 0;
+      }
+
+      .traffic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .traffic-dot.red { background: #ff5f57; }
+      .traffic-dot.yellow { background: #ffbd2e; }
+      .traffic-dot.green { background: #28c840; }
+
+      .url-bar {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        background: #2c2c2c;
+        border-radius: 6px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 12px;
+        color: #8c8c8c;
+        font-family: inherit;
+      }
+
+      .url-bar .lock-icon {
+        margin-right: 6px;
+        font-size: 10px;
+        color: #6ea392;
+      }
+
+      /* ── app body ── */
+      .app-body {
+        display: flex;
+        min-height: 620px;
+      }
+
+      /* ── sidebar ── */
+      .sidebar {
+        width: 56px;
+        background: linear-gradient(180deg, #02120f 0%, #010a08 100%);
+        border-right: 1px solid #0f2f27;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 0;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        color: #4a7968;
+        cursor: default;
+        transition: background 0.15s;
+        position: relative;
+      }
+
+      .sidebar-icon.active {
+        background: rgba(47, 122, 88, 0.18);
+        color: #5ee4a0;
+        box-shadow: 0 0 12px rgba(94, 228, 160, 0.12);
+      }
+
+      .sidebar-icon .label {
+        position: absolute;
+        left: 50%;
+        top: calc(100% + 2px);
+        transform: translateX(-50%);
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        color: inherit;
+      }
+
+      .sidebar-divider {
+        width: 28px;
+        height: 1px;
+        background: #0f2f27;
+        margin: 6px 0;
+      }
+
+      /* ── content area ── */
+      .content-area {
+        flex: 1;
+        background: var(--phone-bg);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* ── top bar ── */
+      .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 32px;
+        border-bottom: 1px solid var(--brand-100);
+        background: var(--surface);
+        flex-shrink: 0;
+      }
+
+      .site-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid var(--brand-200);
+        border-radius: 999px;
+        background: var(--brand-50);
+        color: var(--brand-700);
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .site-pill-icon {
+        font-size: 11px;
+      }
+
+      .month-nav {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .month-arrow {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        border: 1px solid var(--brand-200);
+        background: var(--surface);
+        color: var(--brand-700);
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s;
+        font-family: inherit;
+      }
+
+      .month-arrow:hover {
+        background: var(--brand-50);
+        border-color: var(--brand-500);
+      }
+
+      .month-label {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text-primary);
+        min-width: 140px;
+        text-align: center;
+      }
+
+      .sage-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--brand-600);
+        color: #ffffff;
+        padding: 7px 14px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        animation: chip-shimmer 2.4s ease-in-out infinite;
+      }
+
+      .sage-chip-icon {
+        font-size: 13px;
+      }
+
+      @keyframes chip-shimmer {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(47, 122, 88, 0); }
+        50% { box-shadow: 0 0 0 5px rgba(47, 122, 88, 0.18), 0 0 16px rgba(93, 217, 165, 0.12); }
+      }
+
+      /* ── document card ── */
+      .doc-container {
+        padding: 32px;
+        flex: 1;
+      }
+
+      .doc-card {
+        background: var(--surface);
+        border: 1px solid var(--brand-100);
+        border-radius: 16px;
+        box-shadow: var(--shadow-card);
+        padding: 48px 56px;
+        max-width: 820px;
+        margin: 0 auto;
+      }
+
+      .doc-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 6px;
+        line-height: 1.3;
+      }
+
+      .doc-timestamp {
+        font-size: 13px;
+        color: #6b8078;
+        margin-bottom: 36px;
+      }
+
+      /* ── document sections ── */
+      .doc-section {
+        margin-bottom: 32px;
+        opacity: 0;
+        transform: translateY(12px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+
+      .doc-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .doc-section-heading {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--brand-100);
+      }
+
+      .doc-paragraph {
+        font-size: 14.5px;
+        line-height: 1.7;
+        color: #2d4a3e;
+      }
+
+      /* ── site subsections ── */
+      .site-subsection {
+        margin-bottom: 20px;
+      }
+
+      .site-subsection:last-child {
+        margin-bottom: 0;
+      }
+
+      .site-name {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .site-score {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 2px 10px;
+        border-radius: 999px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .site-score.up {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .site-score.down {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .doc-bullets {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .doc-bullets li {
+        font-size: 14px;
+        line-height: 1.65;
+        color: #2d4a3e;
+        padding-left: 18px;
+        position: relative;
+      }
+
+      .doc-bullets li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 9px;
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--brand-500);
+      }
+
+      /* ── patterns bullets ── */
+      .pattern-bullets li::before {
+        background: #d4a017;
+      }
+
+      /* ── numbered actions ── */
+      .doc-numbered {
+        list-style: none;
+        padding: 0;
+        counter-reset: actions;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .doc-numbered li {
+        font-size: 14px;
+        line-height: 1.65;
+        color: #2d4a3e;
+        padding-left: 32px;
+        position: relative;
+        counter-increment: actions;
+      }
+
+      .doc-numbered li::before {
+        content: counter(actions);
+        position: absolute;
+        left: 0;
+        top: 2px;
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        background: var(--brand-600);
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        display: grid;
+        place-items: center;
+      }
+
+      /* ── footer buttons ── */
+      .doc-footer {
+        display: flex;
+        gap: 12px;
+        margin-top: 36px;
+        padding-top: 24px;
+        border-top: 1px solid var(--brand-100);
+      }
+
+      .doc-btn {
+        border: 1.5px solid var(--brand-200);
+        border-radius: 10px;
+        background: transparent;
+        color: var(--brand-700);
+        padding: 10px 22px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s, border-color 0.15s, color 0.15s;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .doc-btn:hover {
+        background: var(--brand-50);
+        border-color: var(--brand-500);
+      }
+
+      .doc-btn.downloaded {
+        border-color: #166534;
+        color: #166534;
+        background: #f0fdf4;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-header">
+      <p class="slide-kicker">HeySage &mdash; Executive Leader</p>
+      <h1 class="slide-title">Automated Monthly Operational Narrative</h1>
+      <p class="slide-subtitle">
+        SAGE generates a written executive briefing a COO can read in three minutes
+        &mdash; turning captured data into actionable insight.
+      </p>
+    </div>
+
+    <div class="desktop-frame">
+      <!-- window chrome -->
+      <div class="window-chrome">
+        <div class="traffic-lights">
+          <span class="traffic-dot red"></span>
+          <span class="traffic-dot yellow"></span>
+          <span class="traffic-dot green"></span>
+        </div>
+        <div class="url-bar">
+          <span class="lock-icon">&#128274;</span>
+          app.heysage.com/analytics/briefing
+        </div>
+      </div>
+
+      <div class="app-body">
+        <!-- sidebar -->
+        <div class="sidebar">
+          <div class="sidebar-icon" title="Home">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Inspections">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Work Items">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-icon active" title="Reports">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <span class="label">Reports</span>
+          </div>
+          <div class="sidebar-icon" title="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+        </div>
+
+        <!-- main content -->
+        <div class="content-area">
+          <!-- top bar -->
+          <div class="top-bar">
+            <div class="site-pill">
+              <span class="site-pill-icon">&#9679;</span>
+              All Sites
+            </div>
+            <div class="month-nav">
+              <button class="month-arrow" id="prevMonth" aria-label="Previous month">&larr;</button>
+              <span class="month-label" id="monthLabel">March 2026</span>
+              <button class="month-arrow" id="nextMonth" aria-label="Next month">&rarr;</button>
+            </div>
+            <div class="sage-chip">
+              <span class="sage-chip-icon">&#10022;</span>
+              Generated by SAGE
+            </div>
+          </div>
+
+          <!-- document -->
+          <div class="doc-container">
+            <div class="doc-card">
+              <h2 class="doc-title" id="docTitle">SAGE Monthly Briefing &mdash; March 2026</h2>
+              <p class="doc-timestamp" id="docTimestamp">Generated Mar 31, 2026 at 6:00 AM</p>
+
+              <div class="doc-section" id="sectionSummary">
+                <h3 class="doc-section-heading">Executive Summary</h3>
+                <p class="doc-paragraph" id="summaryText">Overall operations improved modestly in March, with the regional SAGE score rising from 79 to 82. Inspection coverage reached 87% across all sites, up 4 points from February. Work item backlog decreased by 18%, though ASU Downtown remains a concern with persistent overdue items. One recordable safety incident was reported and is under review.</p>
+              </div>
+
+              <div class="doc-section" id="sectionSites">
+                <h3 class="doc-section-heading">Site Performance</h3>
+                <div id="sitesContent">
+                  <div class="site-subsection">
+                    <div class="site-name">
+                      Estrella Community College
+                      <span class="site-score up">88 &#9650;+3</span>
+                    </div>
+                    <ul class="doc-bullets">
+                      <li>Inspection scores improved 6% driven by consistent daily lobby coverage</li>
+                      <li>All work items resolved within SLA for the first time in Q1</li>
+                      <li>One near-miss reported and addressed same-day</li>
+                    </ul>
+                  </div>
+                  <div class="site-subsection">
+                    <div class="site-name">
+                      ASU Downtown
+                      <span class="site-score down">72 &#9660;-5</span>
+                    </div>
+                    <ul class="doc-bullets">
+                      <li>Joint inspection frequency fell below monthly target (62% vs 80% goal)</li>
+                      <li>4 work items overdue in Building B, oldest at 12 days</li>
+                      <li>Safety incident (slip/fall) still pending root cause investigation</li>
+                    </ul>
+                  </div>
+                  <div class="site-subsection">
+                    <div class="site-name">
+                      Palm Springs Medical
+                      <span class="site-score up">81 &#9650;+1</span>
+                    </div>
+                    <ul class="doc-bullets">
+                      <li>Resolved 3-month grout backlog in east wing restrooms</li>
+                      <li>Customer satisfaction survey score rose to 4.2/5</li>
+                      <li>Staffing gap on weekends affecting evening shift coverage</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="doc-section" id="sectionPatterns">
+                <h3 class="doc-section-heading">Patterns Across Regions</h3>
+                <ul class="doc-bullets pattern-bullets" id="patternsContent">
+                  <li>Work item aging correlates strongly with sites that have below-target joint inspection rates</li>
+                  <li>Sites with daily supervisor touchpoints consistently score 10+ points higher</li>
+                  <li>Weekend staffing gaps are emerging as a regional trend &mdash; 2 of 3 sites affected</li>
+                </ul>
+              </div>
+
+              <div class="doc-section" id="sectionActions">
+                <h3 class="doc-section-heading">Recommended Actions</h3>
+                <ol class="doc-numbered" id="actionsContent">
+                  <li>Escalate ASU Downtown overdue work items to regional manager</li>
+                  <li>Schedule joint inspection catch-up sessions at ASU by April 10</li>
+                  <li>Develop weekend staffing plan for Palm Springs and ASU</li>
+                  <li>Close open safety incident investigation within 48 hours</li>
+                </ol>
+              </div>
+
+              <div class="doc-section" id="sectionFooter">
+                <div class="doc-footer">
+                  <button class="doc-btn" id="downloadBtn">
+                    <span>&#8681;</span>
+                    <span id="downloadLabel">Download PDF</span>
+                  </button>
+                  <button class="doc-btn" id="shareBtn">
+                    <span>&#8599;</span>
+                    Share
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const months = {
+        march: {
+          label: "March 2026",
+          title: "SAGE Monthly Briefing \u2014 March 2026",
+          timestamp: "Generated Mar 31, 2026 at 6:00 AM",
+          summary: "Overall operations improved modestly in March, with the regional SAGE score rising from 79 to 82. Inspection coverage reached 87% across all sites, up 4 points from February. Work item backlog decreased by 18%, though ASU Downtown remains a concern with persistent overdue items. One recordable safety incident was reported and is under review.",
+          sites: [
+            {
+              name: "Estrella Community College",
+              score: 88,
+              delta: "+3",
+              direction: "up",
+              bullets: [
+                "Inspection scores improved 6% driven by consistent daily lobby coverage",
+                "All work items resolved within SLA for the first time in Q1",
+                "One near-miss reported and addressed same-day"
+              ]
+            },
+            {
+              name: "ASU Downtown",
+              score: 72,
+              delta: "-5",
+              direction: "down",
+              bullets: [
+                "Joint inspection frequency fell below monthly target (62% vs 80% goal)",
+                "4 work items overdue in Building B, oldest at 12 days",
+                "Safety incident (slip/fall) still pending root cause investigation"
+              ]
+            },
+            {
+              name: "Palm Springs Medical",
+              score: 81,
+              delta: "+1",
+              direction: "up",
+              bullets: [
+                "Resolved 3-month grout backlog in east wing restrooms",
+                "Customer satisfaction survey score rose to 4.2/5",
+                "Staffing gap on weekends affecting evening shift coverage"
+              ]
+            }
+          ],
+          patterns: [
+            "Work item aging correlates strongly with sites that have below-target joint inspection rates",
+            "Sites with daily supervisor touchpoints consistently score 10+ points higher",
+            "Weekend staffing gaps are emerging as a regional trend \u2014 2 of 3 sites affected"
+          ],
+          actions: [
+            "Escalate ASU Downtown overdue work items to regional manager",
+            "Schedule joint inspection catch-up sessions at ASU by April 10",
+            "Develop weekend staffing plan for Palm Springs and ASU",
+            "Close open safety incident investigation within 48 hours"
+          ]
+        },
+        february: {
+          label: "February 2026",
+          title: "SAGE Monthly Briefing \u2014 February 2026",
+          timestamp: "Generated Feb 28, 2026 at 6:00 AM",
+          summary: "February saw mixed results across the portfolio. The regional SAGE score held steady at 79, with inspection coverage at 83%. Work item backlog grew by 9%, primarily driven by deferred maintenance at ASU Downtown and weekend staffing constraints at Palm Springs Medical. No recordable safety incidents were reported this month.",
+          sites: [
+            {
+              name: "Estrella Community College",
+              score: 85,
+              delta: "+2",
+              direction: "up",
+              bullets: [
+                "Consistent lobby inspection routine maintained throughout the month",
+                "Two overdue work items from January closed within first week",
+                "Night shift coverage improved after schedule adjustment"
+              ]
+            },
+            {
+              name: "ASU Downtown",
+              score: 77,
+              delta: "-2",
+              direction: "down",
+              bullets: [
+                "Joint inspection rate at 71%, below the 80% monthly target",
+                "Building B restroom grout issues deferred for third consecutive month",
+                "Supervisor vacancy filled mid-month; onboarding in progress"
+              ]
+            },
+            {
+              name: "Palm Springs Medical",
+              score: 80,
+              delta: "0",
+              direction: "up",
+              bullets: [
+                "Customer satisfaction steady at 3.9/5",
+                "East wing restroom grout backlog persists; vendor quote received",
+                "Weekend evening shift running at 60% staffing two weekends in a row"
+              ]
+            }
+          ],
+          patterns: [
+            "Sites with supervisor vacancies show a 5\u20138 point SAGE score decline within 30 days",
+            "Deferred maintenance items older than 30 days correlate with lower customer satisfaction",
+            "Joint inspection adherence is the strongest leading indicator of monthly score movement"
+          ],
+          actions: [
+            "Prioritize grout repair vendor approval for ASU Downtown and Palm Springs",
+            "Complete onboarding for new ASU Downtown supervisor by March 7",
+            "Review weekend staffing model across all three sites",
+            "Set joint inspection recovery targets for March"
+          ]
+        }
+      };
+
+      let currentMonth = "march";
+
+      const monthLabel = document.getElementById("monthLabel");
+      const docTitle = document.getElementById("docTitle");
+      const docTimestamp = document.getElementById("docTimestamp");
+      const summaryText = document.getElementById("summaryText");
+      const sitesContent = document.getElementById("sitesContent");
+      const patternsContent = document.getElementById("patternsContent");
+      const actionsContent = document.getElementById("actionsContent");
+      const prevMonth = document.getElementById("prevMonth");
+      const nextMonth = document.getElementById("nextMonth");
+      const downloadBtn = document.getElementById("downloadBtn");
+      const downloadLabel = document.getElementById("downloadLabel");
+
+      function buildSitesHTML(sites) {
+        return sites.map(function (site) {
+          const arrow = site.direction === "up" ? "\u25B2" : "\u25BC";
+          const cls = site.direction === "up" ? "up" : "down";
+          const bullets = site.bullets.map(function (b) {
+            return "<li>" + b + "</li>";
+          }).join("");
+          return '<div class="site-subsection">' +
+            '<div class="site-name">' + site.name +
+            ' <span class="site-score ' + cls + '">' + site.score + " " + arrow + site.delta + "</span></div>" +
+            '<ul class="doc-bullets">' + bullets + "</ul></div>";
+        }).join("");
+      }
+
+      function buildListHTML(items, cls) {
+        return items.map(function (item) {
+          return "<li>" + item + "</li>";
+        }).join("");
+      }
+
+      function renderMonth(key, animate) {
+        var data = months[key];
+        monthLabel.textContent = data.label;
+        docTitle.textContent = data.title;
+        docTimestamp.textContent = data.timestamp;
+        summaryText.textContent = data.summary;
+        sitesContent.innerHTML = buildSitesHTML(data.sites);
+        patternsContent.innerHTML = buildListHTML(data.patterns);
+        actionsContent.innerHTML = buildListHTML(data.actions);
+
+        downloadLabel.textContent = "Download PDF";
+        downloadBtn.classList.remove("downloaded");
+
+        if (animate) {
+          runEntrance();
+        }
+      }
+
+      function runEntrance() {
+        var sections = document.querySelectorAll(".doc-section");
+        sections.forEach(function (s) { s.classList.remove("visible"); });
+        sections.forEach(function (s, i) {
+          setTimeout(function () { s.classList.add("visible"); }, 150 + i * 200);
+        });
+      }
+
+      function scrollContentToTop() {
+        var area = document.querySelector(".content-area");
+        if (area) area.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      prevMonth.addEventListener("click", function () {
+        if (currentMonth === "march") {
+          currentMonth = "february";
+          renderMonth("february", true);
+          scrollContentToTop();
+        }
+      });
+
+      nextMonth.addEventListener("click", function () {
+        if (currentMonth === "february") {
+          currentMonth = "march";
+          renderMonth("march", true);
+          scrollContentToTop();
+        }
+      });
+
+      downloadBtn.addEventListener("click", function () {
+        if (downloadBtn.classList.contains("downloaded")) return;
+        downloadLabel.textContent = "Downloading\u2026";
+        downloadBtn.style.pointerEvents = "none";
+        setTimeout(function () {
+          downloadLabel.textContent = "Downloaded \u2713";
+          downloadBtn.classList.add("downloaded");
+          downloadBtn.style.pointerEvents = "";
+        }, 1200);
+      });
+
+      runEntrance();
+    </script>
+  </body>
+</html>

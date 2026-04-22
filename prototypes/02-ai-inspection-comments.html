@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype 02 — AI-Assisted Inspection Comments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --brand-50: #f3faf6;
+        --brand-100: #dcefe4;
+        --brand-200: #b7dac4;
+        --brand-500: #2f7a58;
+        --brand-600: #245f45;
+        --brand-700: #1d4d38;
+        --brand-800: #183e2f;
+        --brand-900: #122f24;
+        --phone-bg: #f4f7f5;
+        --surface: #ffffff;
+        --text-primary: #173025;
+        --shadow-card: 0 8px 24px rgba(13, 33, 24, 0.08);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        background: linear-gradient(170deg, #0d2118 0%, #091a12 50%, #06120d 100%);
+        color: #e8f0eb;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 48px 24px 56px;
+      }
+
+      /* ── slide header ── */
+      .slide-header {
+        text-align: center;
+        max-width: 540px;
+        margin-bottom: 36px;
+      }
+
+      .slide-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #6ea392;
+        margin-bottom: 12px;
+      }
+
+      .slide-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #ffffff;
+        margin-bottom: 14px;
+      }
+
+      .slide-subtitle {
+        font-size: 15px;
+        line-height: 1.55;
+        color: #8faa9e;
+      }
+
+      /* ── phone frame ── */
+      .phone-frame {
+        width: 375px;
+        border-radius: 40px;
+        background: #0a0a0a;
+        padding: 12px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        position: relative;
+      }
+
+      .phone-screen {
+        border-radius: 30px;
+        overflow: hidden;
+        background: var(--phone-bg);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        max-height: 780px;
+      }
+
+      /* ── iOS status bar ── */
+      .status-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 24px 6px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #e8f4ef;
+        background: var(--brand-700);
+      }
+
+      .status-bar-right {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11px;
+      }
+
+      .status-dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 999px;
+        background: #e8f4ef;
+        display: inline-block;
+      }
+
+      .status-battery {
+        width: 18px;
+        height: 9px;
+        border: 1.5px solid #e8f4ef;
+        border-radius: 2px;
+        position: relative;
+        margin-left: 2px;
+      }
+
+      .status-battery::after {
+        content: "";
+        position: absolute;
+        right: -4px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 2px;
+        height: 4px;
+        border-radius: 0 1px 1px 0;
+        background: #e8f4ef;
+      }
+
+      .status-battery-fill {
+        position: absolute;
+        inset: 1px;
+        border-radius: 1px;
+        background: #6ee7b7;
+      }
+
+      /* ── dark green app header ── */
+      .app-header {
+        background: var(--brand-700);
+        padding: 12px 16px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .app-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .back-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(255, 255, 255, 0.08);
+        color: #d8efe8;
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      }
+
+      .header-text h1 {
+        font-size: 17px;
+        font-weight: 700;
+        color: #ffffff;
+        line-height: 1.2;
+      }
+
+      .header-id {
+        font-size: 11px;
+        color: #84aa9b;
+        font-weight: 600;
+        margin-top: 1px;
+      }
+
+      .score-badge {
+        flex-shrink: 0;
+        background: #2f7a58;
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 800;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        letter-spacing: -0.02em;
+      }
+
+      /* ── location row ── */
+      .location-row {
+        background: #ffffff;
+        border-bottom: 1px solid var(--brand-100);
+        padding: 14px 18px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .location-pin {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: #c2185b;
+        flex-shrink: 0;
+        margin-top: 4px;
+      }
+
+      .location-text strong {
+        display: block;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .location-text span {
+        font-size: 12px;
+        color: #6b8078;
+        margin-top: 1px;
+        display: block;
+      }
+
+      /* ── scrollable content ── */
+      .scrollable {
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* ── checklist items ── */
+      .checklist {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+      }
+
+      .checklist-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 18px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--brand-100);
+        transition: background 0.2s;
+      }
+
+      .checklist-item.fail-row {
+        background: #fef2f2;
+        border-left: 3px solid #e74c5e;
+      }
+
+      .check-indicator {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+
+      .check-indicator.pass {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .check-indicator.fail {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+
+      .checklist-content {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .checklist-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        line-height: 1.3;
+      }
+
+      .checklist-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 4px;
+      }
+
+      .reason-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #fee2e2;
+        color: #dc2626;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 3px 10px;
+        border-radius: 999px;
+      }
+
+      .checklist-item.pending-row {
+        opacity: 0.5;
+      }
+
+      .check-indicator.pending {
+        background: var(--brand-50);
+        border: 1.5px solid var(--brand-200);
+        color: transparent;
+      }
+
+      /* ── AI suggestion card ── */
+      .ai-section {
+        margin: 14px;
+        border: 1px solid var(--brand-100);
+        border-radius: 18px;
+        background: #ffffff;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        transition: opacity 0.4s ease, max-height 0.4s ease;
+      }
+
+      .ai-bar {
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--brand-100);
+        background: var(--brand-50);
+      }
+
+      .ai-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: var(--brand-600);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-size: 13px;
+        flex-shrink: 0;
+      }
+
+      .ai-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--brand-700);
+        flex: 1;
+      }
+
+      .ai-body {
+        padding: 18px;
+      }
+
+      .ai-comment-area {
+        width: 100%;
+        min-height: 90px;
+        border: 1.5px solid var(--brand-200);
+        border-radius: 12px;
+        padding: 14px;
+        font-family: inherit;
+        font-size: 13.5px;
+        line-height: 1.5;
+        color: var(--text-primary);
+        background: var(--brand-50);
+        resize: none;
+        outline: none;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+      }
+
+      .ai-comment-area:focus {
+        border-color: var(--brand-500);
+        box-shadow: 0 0 0 3px rgba(47, 122, 88, 0.12);
+      }
+
+      .ai-comment-area.saved {
+        border-color: #166534;
+        background: #f0fdf4;
+      }
+
+      .ai-comment-area.editing {
+        border-color: var(--brand-500);
+        background: #ffffff;
+        box-shadow: 0 0 0 3px rgba(47, 122, 88, 0.12);
+      }
+
+      .ai-comment-area.empty-state {
+        background: #ffffff;
+        border-color: #d1d5db;
+        color: #9ca3af;
+        min-height: 70px;
+      }
+
+      .saved-indicator {
+        display: none;
+        align-items: center;
+        gap: 6px;
+        margin-top: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        color: #166534;
+      }
+
+      .saved-indicator.show {
+        display: flex;
+      }
+
+      .saved-check {
+        width: 18px;
+        height: 18px;
+        border-radius: 999px;
+        background: #dcfce7;
+        display: grid;
+        place-items: center;
+        font-size: 10px;
+        color: #166534;
+      }
+
+      /* ── action buttons ── */
+      .ai-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 14px;
+      }
+
+      .ai-btn {
+        flex: 1;
+        border: 0;
+        border-radius: 10px;
+        padding: 11px 10px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.1s, background 0.15s, opacity 0.15s;
+      }
+
+      .ai-btn:active {
+        transform: scale(0.97);
+      }
+
+      .ai-btn-accept {
+        background: var(--brand-600);
+        color: #ffffff;
+      }
+
+      .ai-btn-edit {
+        background: transparent;
+        color: var(--brand-600);
+        border: 1.5px solid var(--brand-200);
+      }
+
+      .ai-btn-ignore {
+        background: transparent;
+        color: #6b8078;
+      }
+
+      .ai-btn-ignore:hover {
+        color: #4b5e56;
+      }
+
+      /* ── pattern callout ── */
+      .pattern-box {
+        margin: 0 14px 14px;
+        border-left: 3px solid #d4a017;
+        background: #fdf6e3;
+        border-radius: 0 12px 12px 0;
+        padding: 14px 16px;
+      }
+
+      .pattern-label {
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: #92691e;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .pattern-icon {
+        font-size: 13px;
+      }
+
+      .pattern-text {
+        font-size: 13px;
+        line-height: 1.45;
+        color: #5c4a20;
+      }
+
+      /* ── shimmer on AI card load ── */
+      .ai-section.shimmer {
+        animation: glow 1.8s ease-in-out 2;
+      }
+
+      @keyframes glow {
+        0% {
+          box-shadow: 0 8px 24px rgba(13, 33, 24, 0.08);
+        }
+        40% {
+          box-shadow: 0 8px 24px rgba(13, 33, 24, 0.08), 0 0 0 4px rgba(47, 122, 88, 0.14);
+        }
+        100% {
+          box-shadow: 0 8px 24px rgba(13, 33, 24, 0.08);
+        }
+      }
+
+      /* ── fade-out transition ── */
+      .ai-section.fading {
+        opacity: 0;
+        max-height: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding: 0;
+        overflow: hidden;
+        transition: opacity 0.3s ease, max-height 0.4s ease 0.1s, margin 0.4s ease 0.1s;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-header">
+      <p class="slide-kicker">HeySage &mdash; Site Supervisor</p>
+      <h1 class="slide-title">AI-Assisted Inspection Comments</h1>
+      <p class="slide-subtitle">
+        When a failure is marked during an inspection, AI suggests a pre-written
+        comment based on context and history &mdash; one tap to accept.
+      </p>
+    </div>
+
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <!-- iOS status bar -->
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-bar-right">
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span class="status-dot"></span>
+            <span style="margin-left:2px">WiFi</span>
+            <span class="status-battery"><span class="status-battery-fill"></span></span>
+          </div>
+        </div>
+
+        <!-- app header -->
+        <div class="app-header">
+          <div class="app-header-left">
+            <span class="back-btn" aria-label="Back">&larr;</span>
+            <div class="header-text">
+              <h1>Inspection</h1>
+              <div class="header-id">INS-0412</div>
+            </div>
+          </div>
+          <span class="score-badge">82</span>
+        </div>
+
+        <!-- location -->
+        <div class="location-row">
+          <span class="location-pin"></span>
+          <div class="location-text">
+            <strong>Learning Commons &mdash; Lobby</strong>
+            <span>3 of 8 items checked</span>
+          </div>
+        </div>
+
+        <!-- scrollable content -->
+        <div class="scrollable">
+          <!-- checklist -->
+          <ul class="checklist">
+            <li class="checklist-item">
+              <span class="check-indicator pass">&#10003;</span>
+              <div class="checklist-content">
+                <div class="checklist-label">Glass surfaces</div>
+              </div>
+            </li>
+            <li class="checklist-item fail-row">
+              <span class="check-indicator fail">&#10005;</span>
+              <div class="checklist-content">
+                <div class="checklist-label">Floor corners</div>
+                <div class="checklist-meta">
+                  <span class="reason-chip">Smudges</span>
+                </div>
+              </div>
+            </li>
+            <li class="checklist-item pending-row">
+              <span class="check-indicator pending">&nbsp;</span>
+              <div class="checklist-content">
+                <div class="checklist-label">Waste receptacles</div>
+              </div>
+            </li>
+          </ul>
+
+          <!-- AI suggestion card -->
+          <div class="ai-section shimmer" id="aiCard">
+            <div class="ai-bar">
+              <span class="ai-icon">&#10022;</span>
+              <span class="ai-label">SAGE &mdash; Suggested Comment</span>
+            </div>
+            <div class="ai-body">
+              <div
+                class="ai-comment-area"
+                id="commentArea"
+                role="textbox"
+                aria-multiline="true"
+              >Smudges found near south entry floor corners. This area has failed for the same reason in 2 of the last 3 inspections. Recommend adding to the nightly deep-clean rotation.</div>
+
+              <div class="saved-indicator" id="savedIndicator" aria-live="polite">
+                <span class="saved-check">&#10003;</span>
+                <span>Comment saved</span>
+              </div>
+
+              <div class="ai-actions" id="aiActions">
+                <button class="ai-btn ai-btn-accept" id="btnAccept">Accept</button>
+                <button class="ai-btn ai-btn-edit" id="btnEdit">Edit</button>
+                <button class="ai-btn ai-btn-ignore" id="btnIgnore">Ignore</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- pattern callout -->
+          <div class="pattern-box">
+            <p class="pattern-label"><span class="pattern-icon">&#9888;</span> Pattern Detected</p>
+            <p class="pattern-text">
+              This item has failed 2 of 3 recent inspections at this site.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const aiCard = document.getElementById("aiCard");
+      const commentArea = document.getElementById("commentArea");
+      const savedIndicator = document.getElementById("savedIndicator");
+      const aiActions = document.getElementById("aiActions");
+      const btnAccept = document.getElementById("btnAccept");
+      const btnEdit = document.getElementById("btnEdit");
+      const btnIgnore = document.getElementById("btnIgnore");
+
+      const originalComment =
+        "Smudges found near south entry floor corners. This area has failed for the same reason in 2 of the last 3 inspections. Recommend adding to the nightly deep-clean rotation.";
+
+      btnAccept.addEventListener("click", () => {
+        commentArea.classList.add("saved");
+        commentArea.contentEditable = "false";
+        savedIndicator.classList.add("show");
+        aiActions.style.display = "none";
+      });
+
+      btnEdit.addEventListener("click", () => {
+        commentArea.classList.add("editing");
+        commentArea.contentEditable = "true";
+        commentArea.focus();
+
+        const range = document.createRange();
+        range.selectNodeContents(commentArea);
+        range.collapse(false);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        btnEdit.textContent = "Save";
+        btnEdit.classList.remove("ai-btn-edit");
+        btnEdit.classList.add("ai-btn-accept");
+
+        btnAccept.style.display = "none";
+        btnIgnore.style.display = "none";
+
+        btnEdit.removeEventListener("click", arguments.callee);
+        btnEdit.addEventListener("click", function saveHandler() {
+          commentArea.classList.remove("editing");
+          commentArea.classList.add("saved");
+          commentArea.contentEditable = "false";
+          savedIndicator.classList.add("show");
+          aiActions.style.display = "none";
+        });
+      });
+
+      btnIgnore.addEventListener("click", () => {
+        aiCard.style.transition = "opacity 0.4s ease, margin 0.3s ease";
+        aiCard.style.opacity = "0";
+
+        setTimeout(() => {
+          aiCard.innerHTML = "";
+          aiCard.classList.remove("shimmer");
+          aiCard.style.opacity = "1";
+          aiCard.style.transition = "opacity 0.3s ease";
+
+          const bar = document.createElement("div");
+          bar.className = "ai-bar";
+          bar.style.borderBottom = "none";
+          bar.innerHTML =
+            '<span class="ai-icon" style="background:#6b8078;">&#9998;</span>' +
+            '<span class="ai-label" style="color:#6b8078;">Add Comment</span>';
+          aiCard.appendChild(bar);
+
+          const body = document.createElement("div");
+          body.className = "ai-body";
+
+          const textarea = document.createElement("div");
+          textarea.className = "ai-comment-area empty-state";
+          textarea.setAttribute("role", "textbox");
+          textarea.setAttribute("aria-multiline", "true");
+          textarea.setAttribute("contenteditable", "true");
+          textarea.textContent = "Add your own comment\u2026";
+          textarea.addEventListener("focus", function clearPlaceholder() {
+            if (textarea.textContent === "Add your own comment\u2026") {
+              textarea.textContent = "";
+              textarea.classList.remove("empty-state");
+              textarea.style.color = "";
+            }
+          });
+
+          body.appendChild(textarea);
+          aiCard.appendChild(body);
+        }, 400);
+      });
+    </script>
+  </body>
+</html>

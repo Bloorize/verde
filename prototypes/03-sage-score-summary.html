@@ -1,0 +1,733 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prototype 03 — SAGE Score Natural Language Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --brand-50: #f3faf6;
+        --brand-100: #dcefe4;
+        --brand-200: #b7dac4;
+        --brand-500: #2f7a58;
+        --brand-600: #245f45;
+        --brand-700: #1d4d38;
+        --brand-800: #183e2f;
+        --brand-900: #122f24;
+        --phone-bg: #f4f7f5;
+        --surface: #ffffff;
+        --text-primary: #173025;
+        --shadow-card: 0 8px 24px rgba(13, 33, 24, 0.08);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      body {
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+        background: linear-gradient(170deg, #0d2118 0%, #091a12 50%, #06120d 100%);
+        color: #e8f0eb;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 48px 24px 56px;
+      }
+
+      /* ── slide header ── */
+      .slide-header {
+        text-align: center;
+        max-width: 540px;
+        margin-bottom: 36px;
+      }
+
+      .slide-kicker {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #6ea392;
+        margin-bottom: 12px;
+      }
+
+      .slide-title {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1.15;
+        color: #ffffff;
+        margin-bottom: 14px;
+      }
+
+      .slide-subtitle {
+        font-size: 15px;
+        line-height: 1.55;
+        color: #8faa9e;
+      }
+
+      /* ── desktop frame ── */
+      .desktop-frame {
+        width: 960px;
+        border-radius: 16px;
+        background: #1e1e1e;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+        overflow: hidden;
+      }
+
+      /* ── window chrome ── */
+      .window-chrome {
+        background: #1e1e1e;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        gap: 10px;
+      }
+
+      .traffic-lights {
+        display: flex;
+        gap: 7px;
+        flex-shrink: 0;
+      }
+
+      .traffic-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+      }
+
+      .traffic-dot.red { background: #ff5f57; }
+      .traffic-dot.yellow { background: #ffbd2e; }
+      .traffic-dot.green { background: #28c840; }
+
+      .url-bar {
+        flex: 1;
+        max-width: 420px;
+        margin: 0 auto;
+        background: #2c2c2c;
+        border-radius: 6px;
+        height: 26px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        font-size: 12px;
+        color: #8c8c8c;
+        font-family: inherit;
+      }
+
+      .url-bar .lock-icon {
+        margin-right: 6px;
+        font-size: 10px;
+        color: #6ea392;
+      }
+
+      /* ── app body ── */
+      .app-body {
+        display: flex;
+        min-height: 620px;
+      }
+
+      /* ── sidebar ── */
+      .sidebar {
+        width: 56px;
+        background: linear-gradient(180deg, #02120f 0%, #010a08 100%);
+        border-right: 1px solid #0f2f27;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 16px 0;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+
+      .sidebar-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+        color: #4a7968;
+        cursor: default;
+        transition: background 0.15s;
+        position: relative;
+      }
+
+      .sidebar-icon.active {
+        background: rgba(47, 122, 88, 0.18);
+        color: #5ee4a0;
+        box-shadow: 0 0 12px rgba(94, 228, 160, 0.12);
+      }
+
+      .sidebar-icon .label {
+        position: absolute;
+        left: 50%;
+        top: calc(100% + 2px);
+        transform: translateX(-50%);
+        font-size: 8px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        white-space: nowrap;
+        color: inherit;
+      }
+
+      .sidebar-divider {
+        width: 28px;
+        height: 1px;
+        background: #0f2f27;
+        margin: 6px 0;
+      }
+
+      /* ── main content ── */
+      .main-content {
+        flex: 1;
+        background: var(--phone-bg);
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── top bar ── */
+      .top-bar {
+        background: var(--surface);
+        border-bottom: 1px solid var(--brand-100);
+        padding: 14px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .site-selector {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--brand-50);
+        border: 1px solid var(--brand-100);
+        border-radius: 999px;
+        padding: 7px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--brand-700);
+        cursor: default;
+      }
+
+      .site-selector .caret {
+        font-size: 9px;
+        color: var(--brand-500);
+      }
+
+      .refresh-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--brand-600);
+        color: #ffffff;
+        border: 0;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s, transform 0.1s;
+      }
+
+      .refresh-btn:hover {
+        background: var(--brand-700);
+      }
+
+      .refresh-btn:active {
+        transform: scale(0.97);
+      }
+
+      .refresh-btn .icon {
+        font-size: 13px;
+        display: inline-block;
+        transition: transform 0.4s ease;
+      }
+
+      .refresh-btn.spinning .icon {
+        animation: spin 0.7s ease-in-out;
+      }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      /* ── page content ── */
+      .page-content {
+        flex: 1;
+        padding: 28px;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .page-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+
+      .page-subtitle {
+        font-size: 13px;
+        color: #6b8078;
+        font-weight: 500;
+        margin-bottom: 24px;
+      }
+
+      /* ── site cards grid ── */
+      .cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .site-card {
+        background: var(--surface);
+        border: 1px solid var(--brand-100);
+        border-radius: 14px;
+        box-shadow: var(--shadow-card);
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        position: relative;
+      }
+
+      .site-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(13, 33, 24, 0.12);
+      }
+
+      .site-card.expanded {
+        transform: translateY(-2px) scale(1.015);
+        box-shadow: 0 16px 40px rgba(13, 33, 24, 0.15);
+        border-color: var(--brand-200);
+      }
+
+      .card-header {
+        padding: 18px 18px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .card-site-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.3;
+        flex: 1;
+        margin-right: 12px;
+      }
+
+      .card-score-block {
+        text-align: right;
+        flex-shrink: 0;
+      }
+
+      .card-score {
+        font-size: 32px;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .score-green { color: #16803c; }
+      .score-amber { color: #b47d10; }
+      .score-red { color: #c42b1c; }
+
+      .card-trend {
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 3px;
+      }
+
+      .trend-up { color: #16803c; }
+      .trend-down { color: #c42b1c; }
+
+      /* ── SAGE chip ── */
+      .sage-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--brand-50);
+        border: 1px solid var(--brand-100);
+        border-radius: 999px;
+        padding: 3px 10px 3px 7px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--brand-600);
+        margin: 12px 18px 0;
+      }
+
+      .sage-chip .spark {
+        font-size: 11px;
+      }
+
+      /* ── AI summary ── */
+      .card-summary {
+        padding: 10px 18px 18px;
+        font-size: 13px;
+        line-height: 1.55;
+        color: #3d5a4e;
+        position: relative;
+      }
+
+      .card-summary .view-details {
+        display: none;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--brand-500);
+        margin-top: 6px;
+        cursor: pointer;
+      }
+
+      .card-summary:hover .view-details {
+        display: block;
+      }
+
+      /* ── expanded details ── */
+      .card-details {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--brand-50);
+        border-top: 1px solid transparent;
+      }
+
+      .site-card.expanded .card-details {
+        max-height: 220px;
+        border-top-color: var(--brand-100);
+      }
+
+      .card-details-inner {
+        padding: 14px 18px;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+      }
+
+      .detail-stat {
+        text-align: center;
+      }
+
+      .detail-stat .value {
+        font-size: 20px;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.2;
+      }
+
+      .detail-stat .label {
+        font-size: 10px;
+        font-weight: 600;
+        color: #6b8078;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 2px;
+      }
+
+      /* ── regional summary ── */
+      .regional-summary {
+        background: var(--brand-50);
+        border: 1px solid var(--brand-100);
+        border-radius: 12px;
+        padding: 18px 20px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+
+      .regional-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        background: var(--brand-600);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        flex-shrink: 0;
+      }
+
+      .regional-body .regional-label {
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--brand-700);
+        margin-bottom: 6px;
+      }
+
+      .regional-body .regional-text {
+        font-size: 13px;
+        line-height: 1.55;
+        color: #3d5a4e;
+      }
+
+      /* ── shimmer animation for refresh ── */
+      @keyframes shimmer {
+        0% { background-position: -400px 0; }
+        100% { background-position: 400px 0; }
+      }
+
+      .shimmer-overlay {
+        display: none;
+        position: absolute;
+        inset: 0;
+        border-radius: 14px;
+        background: linear-gradient(
+          90deg,
+          transparent 0%,
+          rgba(47, 122, 88, 0.06) 25%,
+          rgba(47, 122, 88, 0.12) 50%,
+          rgba(47, 122, 88, 0.06) 75%,
+          transparent 100%
+        );
+        background-size: 400px 100%;
+        animation: shimmer 1.2s ease-in-out infinite;
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .site-card.refreshing .shimmer-overlay {
+        display: block;
+      }
+
+      .site-card.refreshing .card-summary,
+      .site-card.refreshing .sage-chip {
+        opacity: 0.4;
+        transition: opacity 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="slide-header">
+      <p class="slide-kicker">HeySage &mdash; Regional Manager</p>
+      <h1 class="slide-title">SAGE Score Natural Language Summary</h1>
+      <p class="slide-subtitle">
+        Instead of just a number, AI explains exactly why each site scored the
+        way it did &mdash; in plain English.
+      </p>
+    </div>
+
+    <div class="desktop-frame">
+      <!-- window chrome -->
+      <div class="window-chrome">
+        <div class="traffic-lights">
+          <span class="traffic-dot red"></span>
+          <span class="traffic-dot yellow"></span>
+          <span class="traffic-dot green"></span>
+        </div>
+        <div class="url-bar">
+          <span class="lock-icon">&#128274;</span>
+          app.heysage.com/home
+        </div>
+      </div>
+
+      <!-- app body -->
+      <div class="app-body">
+        <!-- sidebar -->
+        <div class="sidebar">
+          <div class="sidebar-icon active" title="Home">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="label">Home</span>
+          </div>
+          <div class="sidebar-icon" title="Inspections">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Work Items">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <div class="sidebar-divider"></div>
+          <div class="sidebar-icon" title="Reports">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="sidebar-icon" title="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          </div>
+        </div>
+
+        <!-- main content area -->
+        <div class="main-content">
+          <div class="top-bar">
+            <div class="site-selector">
+              <span>All Sites &mdash; Southwest Region</span>
+              <span class="caret">&#9662;</span>
+            </div>
+            <button class="refresh-btn" id="refreshBtn">
+              <span class="icon">&#8635;</span>
+              Refresh insights
+            </button>
+          </div>
+
+          <div class="page-content">
+            <h2 class="page-title">Regional Dashboard</h2>
+            <p class="page-subtitle">Southwest Region &mdash; March 2026</p>
+
+            <div class="cards-grid">
+              <!-- Card 1: Estrella -->
+              <div class="site-card" data-site="estrella">
+                <div class="shimmer-overlay"></div>
+                <div class="card-header">
+                  <span class="card-site-name">Estrella Community College</span>
+                  <div class="card-score-block">
+                    <div class="card-score score-green">88</div>
+                    <div class="card-trend trend-up">&#9650; +3</div>
+                  </div>
+                </div>
+                <div class="sage-chip"><span class="spark">&#10022;</span> SAGE</div>
+                <div class="card-summary">
+                  Inspection coverage is strong at 94% and all work items are
+                  current. Daily lobby touchpoints are driving consistent scores
+                  across high-traffic areas.
+                  <div class="view-details">View details &rarr;</div>
+                </div>
+                <div class="card-details">
+                  <div class="card-details-inner">
+                    <div class="detail-stat">
+                      <div class="value">94%</div>
+                      <div class="label">Inspection Coverage</div>
+                    </div>
+                    <div class="detail-stat">
+                      <div class="value">0</div>
+                      <div class="label">Overdue Items</div>
+                    </div>
+                    <div class="detail-stat">
+                      <div class="value">0</div>
+                      <div class="label">Safety Incidents</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 2: ASU Downtown -->
+              <div class="site-card" data-site="asu">
+                <div class="shimmer-overlay"></div>
+                <div class="card-header">
+                  <span class="card-site-name">ASU Downtown</span>
+                  <div class="card-score-block">
+                    <div class="card-score score-amber">72</div>
+                    <div class="card-trend trend-down">&#9660; -5</div>
+                  </div>
+                </div>
+                <div class="sage-chip"><span class="spark">&#10022;</span> SAGE</div>
+                <div class="card-summary">
+                  Joint inspection frequency is below the monthly target and a
+                  safety incident from last week is still in review. Two overdue
+                  work items in Building B are pulling the score down.
+                  <div class="view-details">View details &rarr;</div>
+                </div>
+                <div class="card-details">
+                  <div class="card-details-inner">
+                    <div class="detail-stat">
+                      <div class="value">76%</div>
+                      <div class="label">Inspection Coverage</div>
+                    </div>
+                    <div class="detail-stat">
+                      <div class="value" style="color:#b47d10">2</div>
+                      <div class="label">Overdue Items</div>
+                    </div>
+                    <div class="detail-stat">
+                      <div class="value" style="color:#c42b1c">1</div>
+                      <div class="label">Safety Incidents</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Card 3: Palm Springs Medical -->
+              <div class="site-card" data-site="palmsprings">
+                <div class="shimmer-overlay"></div>
+                <div class="card-header">
+                  <span class="card-site-name">Palm Springs Medical</span>
+                  <div class="card-score-block">
+                    <div class="card-score score-amber">81</div>
+                    <div class="card-trend trend-up">&#9650; +1</div>
+                  </div>
+                </div>
+                <div class="sage-chip"><span class="spark">&#10022;</span> SAGE</div>
+                <div class="card-summary">
+                  Steady improvement driven by resolved backlog in Q1. One
+                  recurring grout issue in the east wing restrooms needs a
+                  preventive maintenance plan.
+                  <div class="view-details">View details &rarr;</div>
+                </div>
+                <div class="card-details">
+                  <div class="card-details-inner">
+                    <div class="detail-stat">
+                      <div class="value">91%</div>
+                      <div class="label">Inspection Coverage</div>
+                    </div>
+                    <div class="detail-stat">
+                      <div class="value">0</div>
+                      <div class="label">Overdue Items</div>
+                    </div>
+                    <div class="detail-stat">
+                      <div class="value">0</div>
+                      <div class="label">Safety Incidents</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Regional summary callout -->
+            <div class="regional-summary">
+              <div class="regional-icon">&#10022;</div>
+              <div class="regional-body">
+                <div class="regional-label">Regional Summary</div>
+                <div class="regional-text">
+                  Across all 3 sites, inspection coverage averaged 87% this
+                  month. ASU Downtown needs immediate attention on overdue work
+                  items and the open safety incident.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const cards = document.querySelectorAll(".site-card");
+      const refreshBtn = document.getElementById("refreshBtn");
+
+      cards.forEach((card) => {
+        card.addEventListener("click", () => {
+          const wasExpanded = card.classList.contains("expanded");
+          cards.forEach((c) => c.classList.remove("expanded"));
+          if (!wasExpanded) card.classList.add("expanded");
+        });
+      });
+
+      refreshBtn.addEventListener("click", () => {
+        refreshBtn.classList.add("spinning");
+        cards.forEach((card) => card.classList.add("refreshing"));
+
+        setTimeout(() => {
+          refreshBtn.classList.remove("spinning");
+        }, 700);
+
+        setTimeout(() => {
+          cards.forEach((card) => {
+            card.classList.remove("refreshing");
+            const summary = card.querySelector(".card-summary");
+            const chip = card.querySelector(".sage-chip");
+            if (summary) summary.style.opacity = "";
+            if (chip) chip.style.opacity = "";
+          });
+        }, 1800);
+      });
+    </script>
+  </body>
+</html>
