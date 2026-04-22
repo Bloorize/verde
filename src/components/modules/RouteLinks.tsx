@@ -26,7 +26,7 @@ export const RouteLinks = ({ title, links }: { title: string; links: RouteLinkIt
       {links.map((link) =>
         link.href ? (
           <Link href={link.href as any} key={link.href} asChild>
-            <Pressable className="rounded-xl border border-brand-100 bg-brand-50 px-3 py-2">
+            <Pressable className="rounded-md border border-brand-100 bg-brand-50 px-3 py-2">
               <Text className="text-sm font-semibold text-brand-800">
                 <LocalizedValue value={link.label} />
               </Text>
@@ -41,7 +41,7 @@ export const RouteLinks = ({ title, links }: { title: string; links: RouteLinkIt
           <Pressable
             key={link.label}
             onPress={link.onPress}
-            className="rounded-xl border border-brand-100 bg-brand-50 px-3 py-2"
+            className="rounded-md border border-brand-100 bg-brand-50 px-3 py-2"
           >
             <Text className="text-sm font-semibold text-brand-800">
               <LocalizedValue value={link.label} />

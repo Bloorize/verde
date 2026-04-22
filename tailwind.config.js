@@ -19,10 +19,7 @@ module.exports = {
         },
       },
       boxShadow: {
-        card: '0 8px 24px rgba(13, 33, 24, 0.08)',
-      },
-      borderRadius: {
-        xl2: '18px',
+        card: '0 1px 3px rgba(13, 33, 24, 0.06)',
       },
     },
   },

@@ -4,7 +4,7 @@ import { getScoreColor } from '@/src/utils/score';
 
 export const ScorePill = ({ score }: { score: number }) => (
   <View
-    className="rounded-full px-3 py-1"
+    className="rounded px-3 py-1"
     style={{
       backgroundColor: `${getScoreColor(score)}20`,
     }}

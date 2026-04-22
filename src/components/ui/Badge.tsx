@@ -18,7 +18,7 @@ export const Badge = ({ label, tone = 'neutral' }: BadgeProps) => {
   const localizedLabel = useLocalizedText(label);
 
   return (
-    <View className={`self-start rounded-full px-2.5 py-1 ${toneClass[tone]}`}>
+    <View className={`self-start rounded px-2.5 py-1 ${toneClass[tone]}`}>
       <Text className="text-xs font-semibold">{localizedLabel}</Text>
     </View>
   );

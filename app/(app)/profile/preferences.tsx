@@ -32,7 +32,7 @@ export default function ProfilePreferencesScreen() {
                 onPress={() => {
                   void setLanguage(option);
                 }}
-                className={`rounded-2xl border px-4 py-3 ${isSelected ? 'border-brand-600 bg-brand-50' : 'border-slate-200 bg-white'}`}
+                className={`rounded-lg border px-4 py-3 ${isSelected ? 'border-brand-600 bg-brand-50' : 'border-slate-200 bg-white'}`}
               >
                 <Text className={`text-sm font-semibold ${isSelected ? 'text-brand-700' : 'text-slate-900'}`}>
                   {option === 'en' ? t('English') : t('Spanish')}

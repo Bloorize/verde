@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 import { inspectionChecklistItems } from '@/src/data/checklist';
-import { persistLanguage, getDeviceLanguage, loadStoredLanguage, SupportedLanguage } from '@/src/lib/language';
+import { persistLanguage, loadStoredLanguage, SupportedLanguage } from '@/src/lib/language';
 import { setI18nLanguage } from '@/src/i18n';
 import { mockSites, mockSpaceTypes } from '@/src/data/mockData';
 import { CurrentUser, InspectionFailureReason } from '@/src/types/domain';
@@ -89,7 +89,7 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   isMobileNavOpen: false,
   isAskSageOpen: false,
   notificationCount: 4,
-  language: getDeviceLanguage(),
+  language: 'en',
   isLanguageHydrated: false,
   setSelectedSiteId: (selectedSiteId) => set({ selectedSiteId }),
   setMobileNavOpen: (isMobileNavOpen) => set({ isMobileNavOpen }),
@@ -106,7 +106,7 @@ export const useAppStore = create<AppStore>()((set, get) => ({
     }
 
     const storedLanguage = await loadStoredLanguage();
-    const language = storedLanguage ?? getDeviceLanguage();
+    const language = storedLanguage ?? 'en';
 
     set({ language, isLanguageHydrated: true });
     await setI18nLanguage(language);

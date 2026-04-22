@@ -17,7 +17,7 @@ export default function CustomerSurveysScreen() {
         <View className="gap-2">
           {customer?.map((survey) => (
             <Link key={survey.id} href={`/surveys/${survey.id}` as any} asChild>
-              <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
                 <Text className="text-sm font-semibold text-slate-900">{survey.title}</Text>
                 <Text className="text-xs text-slate-500">Participation {survey.participationRate}% • Score {survey.score}</Text>
               </Pressable>

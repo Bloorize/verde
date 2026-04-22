@@ -22,7 +22,7 @@ export default function TeamEmployeesScreen() {
         <View className="gap-2">
           {query.data?.map((employee) => (
             <Link key={employee.id} href={`/team/${employee.id}` as any} asChild>
-              <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
                 <View className="mb-1 flex-row items-center justify-between">
                   <Text className="text-sm font-semibold text-slate-900">{employee.name}</Text>
                   <Badge label={employee.trainingStatus} tone={employee.trainingStatus === 'Current' ? 'success' : employee.trainingStatus === 'Due Soon' ? 'warning' : 'danger'} />

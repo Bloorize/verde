@@ -18,7 +18,7 @@ export default function CoverageScansScreen() {
         <View className="gap-2">
           {query.data?.map((scan) => (
             <Link href={`/service-coverage/${scan.id}` as any} key={scan.id} asChild>
-              <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
                 <Text className="text-sm font-semibold text-slate-900">{scan.spaceName}</Text>
                 <Text className="text-xs text-slate-500">{scan.frequency} • Completion {scan.completion}%</Text>
               </Pressable>

@@ -133,16 +133,16 @@ export const AskSageWindow = () => {
         style={{
           width: panelWidth,
           height: panelHeight,
-          borderRadius: 24,
+          borderRadius: 12,
           overflow: 'hidden',
-          borderWidth: 2,
-          borderColor: themeTokens.colors.brandPrimary,
+          borderWidth: 1,
+          borderColor: themeTokens.colors.border,
           backgroundColor: '#ffffff',
           shadowColor: '#0d2118',
-          shadowOpacity: 0.16,
-          shadowRadius: 24,
-          shadowOffset: { width: 0, height: 12 },
-          elevation: 8,
+          shadowOpacity: 0.08,
+          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 2 },
+          elevation: 3,
           flexDirection: isDesktop ? 'row' : 'column',
         }}
       >
@@ -187,10 +187,10 @@ export const AskSageWindow = () => {
 
             <View
               style={{
-                flex: 1,
-                marginTop: 24,
-                borderRadius: 22,
-                backgroundColor: 'rgba(255,255,255,0.4)',
+              flex: 1,
+              marginTop: 24,
+              borderRadius: 8,
+              backgroundColor: 'rgba(255,255,255,0.4)',
                 alignItems: 'center',
                 justifyContent: 'center',
                 padding: 20,
@@ -250,9 +250,9 @@ export const AskSageWindow = () => {
             <Pressable
               onPress={() => setAskSageOpen(false)}
               style={{
-                width: 38,
-                height: 38,
-                borderRadius: 19,
+                width: 32,
+                height: 32,
+                borderRadius: 6,
                 alignItems: 'center',
                 justifyContent: 'center',
                 backgroundColor: '#f3faf6',
@@ -273,11 +273,11 @@ export const AskSageWindow = () => {
               <View
                 style={{
                   maxWidth: '84%',
-                  paddingHorizontal: 18,
-                  paddingVertical: 14,
-                  borderRadius: 18,
-                  borderBottomRightRadius: 6,
-                  borderWidth: 2,
+                  paddingHorizontal: 14,
+                  paddingVertical: 10,
+                  borderRadius: 8,
+                  borderBottomRightRadius: 4,
+                  borderWidth: 1,
                   borderColor: '#1f6453',
                   backgroundColor: '#ffffff',
                 }}
@@ -323,10 +323,10 @@ export const AskSageWindow = () => {
 
                       <View
                         style={{
-                          paddingHorizontal: 18,
-                          paddingVertical: 15,
-                          borderRadius: 18,
-                          borderBottomLeftRadius: 6,
+                          paddingHorizontal: 14,
+                          paddingVertical: 10,
+                          borderRadius: 8,
+                          borderBottomLeftRadius: 4,
                           backgroundColor: '#d8f0df',
                         }}
                       >
@@ -339,11 +339,11 @@ export const AskSageWindow = () => {
                     <View
                       style={{
                         maxWidth: '84%',
-                        paddingHorizontal: 18,
-                        paddingVertical: 14,
-                        borderRadius: 18,
-                        borderBottomRightRadius: 6,
-                        borderWidth: 2,
+                        paddingHorizontal: 14,
+                        paddingVertical: 10,
+                        borderRadius: 8,
+                        borderBottomRightRadius: 4,
+                        borderWidth: 1,
                         borderColor: '#1f6453',
                         backgroundColor: '#ffffff',
                       }}
@@ -363,12 +363,12 @@ export const AskSageWindow = () => {
                   key={prompt}
                   onPress={() => pushMessage(prompt)}
                   style={{
-                    borderRadius: 999,
+                    borderRadius: 6,
                     borderWidth: 1,
                     borderColor: '#cce8d5',
                     backgroundColor: '#f7fcf8',
-                    paddingHorizontal: 14,
-                    paddingVertical: 9,
+                    paddingHorizontal: 12,
+                    paddingVertical: 7,
                   }}
                 >
                   <Text style={{ fontSize: 13, color: '#1f6453' }}>
@@ -391,11 +391,11 @@ export const AskSageWindow = () => {
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
-                borderWidth: 2,
-                borderColor: '#1f6453',
-                borderRadius: 30,
-                paddingLeft: 16,
-                paddingRight: 6,
+                borderWidth: 1,
+                borderColor: '#d6e3db',
+                borderRadius: 8,
+                paddingLeft: 12,
+                paddingRight: 4,
                 paddingVertical: 4,
               }}
             >
@@ -416,9 +416,9 @@ export const AskSageWindow = () => {
               <Pressable
                 onPress={() => pushMessage(draftMessage)}
                 style={{
-                  width: 42,
-                  height: 42,
-                  borderRadius: 21,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 8,
                   backgroundColor: '#1f6453',
                   alignItems: 'center',
                   justifyContent: 'center',

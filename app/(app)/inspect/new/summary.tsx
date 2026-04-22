@@ -80,11 +80,11 @@ export default function InspectSummaryScreen() {
         <Text className="text-sm text-slate-700">Failed items: {summaryStats.failedItems}</Text>
         <Text className="text-sm text-slate-700">Starred items: {summaryStats.starred}</Text>
 
-        <Pressable onPress={() => router.push('/inspect/new/work-item')} className="mt-3 rounded-xl border border-brand-200 bg-brand-50 py-2">
+        <Pressable onPress={() => router.push('/inspect/new/work-item')} className="mt-3 rounded-lg border border-brand-200 bg-brand-50 py-2">
           <Text className="text-center text-sm font-semibold text-brand-700">Create Work Item from Failed Room</Text>
         </Pressable>
 
-        <Pressable onPress={() => submitMutation.mutate()} disabled={completedRooms.length === 0} className={`mt-3 rounded-xl py-3 ${completedRooms.length > 0 ? 'bg-brand-700' : 'bg-slate-300'}`}>
+        <Pressable onPress={() => submitMutation.mutate()} disabled={completedRooms.length === 0} className={`mt-3 rounded-lg py-3 ${completedRooms.length > 0 ? 'bg-brand-700' : 'bg-slate-300'}`}>
           <Text className="text-center text-sm font-semibold text-white">Submit Inspection</Text>
         </Pressable>
       </Card>

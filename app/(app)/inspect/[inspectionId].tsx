@@ -51,7 +51,7 @@ export default function InspectionDetailScreen() {
           <Card>
             <Text className="mb-2 text-base font-semibold text-slate-900">{t('Rooms')}</Text>
             {inspection.rooms.map((room) => (
-              <View key={room.id} className="mb-2 rounded-xl bg-slate-50 px-3 py-2">
+              <View key={room.id} className="mb-2 rounded-md bg-slate-50 px-3 py-2">
                 <Text className="text-sm font-semibold text-slate-800">{room.name}</Text>
                 <Text className="text-xs text-slate-500">
                   {t('Score')} {room.score.toFixed(1)} • {t('Photos')} {room.photoCount} • {t('Comments')} {room.commentCount}
@@ -64,7 +64,7 @@ export default function InspectionDetailScreen() {
             <Text className="mb-2 text-base font-semibold text-slate-900">{t('Actions')}</Text>
             <View className="flex-row flex-wrap gap-2">
               {['Download', 'Print', 'Edit', 'Delete'].map((action) => (
-                <Pressable key={action} className="rounded-xl border border-brand-200 bg-brand-50 px-3 py-2">
+                <Pressable key={action} className="rounded-md border border-brand-200 bg-brand-50 px-3 py-2">
                   <Text className="text-xs font-semibold text-brand-700">{t(action)}</Text>
                 </Pressable>
               ))}

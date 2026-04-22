@@ -34,7 +34,7 @@ export const RouteScreen = ({ title, description, links = [], bullets = [], stat
           </Text>
           <View className="flex-row flex-wrap gap-3">
             {stats.map((item) => (
-              <View key={item.label} className="min-w-[45%] flex-1 rounded-xl bg-slate-50 px-3 py-3">
+              <View key={item.label} className="min-w-[45%] flex-1 rounded-md bg-slate-50 px-3 py-3">
                 <Text className="text-xs text-slate-500">
                   <LocalizedLabel value={item.label} />
                 </Text>
@@ -53,7 +53,7 @@ export const RouteScreen = ({ title, description, links = [], bullets = [], stat
           <View className="gap-2">
             {links.map((link) => (
               <Link key={link.href} href={link.href as any} asChild>
-                <Pressable className="rounded-xl border border-brand-100 bg-brand-50 px-3 py-2">
+                <Pressable className="rounded-md border border-brand-100 bg-brand-50 px-3 py-2">
                   <Text className="text-sm font-semibold text-brand-800">
                     <LocalizedLabel value={link.label} />
                   </Text>

@@ -32,7 +32,7 @@ export default function InspectLocationScreen() {
             <Pressable
               key={building.id}
               onPress={() => setLocation({ buildingId: building.id, floorId: undefined })}
-              className={`rounded-xl px-3 py-2 ${building.id === buildingId ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
+              className={`rounded-lg px-3 py-2 ${building.id === buildingId ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
             >
               <Text className={`text-sm font-semibold ${building.id === buildingId ? 'text-white' : 'text-brand-700'}`}>{building.name}</Text>
             </Pressable>
@@ -45,7 +45,7 @@ export default function InspectLocationScreen() {
             <Pressable
               key={floor.id}
               onPress={() => setLocation({ floorId: floor.id })}
-              className={`rounded-xl px-3 py-2 ${floor.id === floorId ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
+              className={`rounded-lg px-3 py-2 ${floor.id === floorId ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
             >
               <Text className={`text-sm font-semibold ${floor.id === floorId ? 'text-white' : 'text-brand-700'}`}>{floor.name}</Text>
             </Pressable>
@@ -58,7 +58,7 @@ export default function InspectLocationScreen() {
             <Pressable
               key={spaceType.id}
               onPress={() => setLocation({ spaceTypeId: spaceType.id })}
-              className={`rounded-xl px-3 py-2 ${spaceType.id === spaceTypeId ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
+              className={`rounded-lg px-3 py-2 ${spaceType.id === spaceTypeId ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
             >
               <Text className={`text-xs font-semibold ${spaceType.id === spaceTypeId ? 'text-white' : 'text-brand-700'}`}>{spaceType.name}</Text>
             </Pressable>
@@ -66,7 +66,7 @@ export default function InspectLocationScreen() {
         </View>
 
         <Text className="mb-1 text-xs font-semibold uppercase text-slate-500">{t('Room identifier')}</Text>
-        <TextInput value={roomIdentifier} onChangeText={(value) => setLocation({ roomIdentifier: value })} className="mb-4 rounded-xl border border-slate-200 px-3 py-2" />
+        <TextInput value={roomIdentifier} onChangeText={(value) => setLocation({ roomIdentifier: value })} className="mb-4 rounded-lg border border-slate-200 px-3 py-2" />
 
         <Pressable
           onPress={() => {
@@ -74,7 +74,7 @@ export default function InspectLocationScreen() {
             router.push('/inspect/new/checklist');
           }}
           disabled={!buildingId || !floorId || !spaceTypeId || !roomIdentifier}
-          className={`rounded-xl py-3 ${buildingId && floorId && spaceTypeId && roomIdentifier ? 'bg-brand-600' : 'bg-slate-300'}`}
+          className={`rounded-lg py-3 ${buildingId && floorId && spaceTypeId && roomIdentifier ? 'bg-brand-600' : 'bg-slate-300'}`}
         >
           <Text className="text-center text-sm font-semibold text-white">{t('Next')}</Text>
         </Pressable>

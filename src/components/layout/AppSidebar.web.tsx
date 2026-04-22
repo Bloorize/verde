@@ -44,7 +44,7 @@ const MENU_ITEMS: SidebarMenuGroup[] = [
       { name: 'Documents', route: '/documents', icon: FileText },
       { name: 'Service Coverage', route: '/service-coverage', icon: QrCode },
       { name: 'Profile', route: '/profile', icon: UserCircle2 },
-      { name: 'Safety Portal', route: '/public/safety', icon: ShieldCheck },
+      { name: 'Safety Portal', route: '/safety', icon: ShieldCheck },
     ],
   },
 ];

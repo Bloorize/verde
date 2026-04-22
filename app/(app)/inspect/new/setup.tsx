@@ -20,7 +20,7 @@ export default function InspectSetupScreen() {
             <Pressable
               key={inspectionType}
               onPress={() => setMeta({ type: inspectionType })}
-              className={`rounded-xl px-3 py-2 ${type === inspectionType ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
+              className={`rounded-lg px-3 py-2 ${type === inspectionType ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
             >
               <Text className={`text-sm font-semibold ${type === inspectionType ? 'text-white' : 'text-brand-700'}`}>{inspectionType}</Text>
             </Pressable>
@@ -28,10 +28,10 @@ export default function InspectSetupScreen() {
         </View>
 
         <View className="mb-3 flex-row gap-2">
-          <Pressable onPress={() => setMeta({ baseline: true })} className={`flex-1 rounded-xl px-3 py-3 ${baseline ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}>
+          <Pressable onPress={() => setMeta({ baseline: true })} className={`flex-1 rounded-lg px-3 py-3 ${baseline ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}>
             <Text className={`text-center text-sm font-semibold ${baseline ? 'text-white' : 'text-brand-700'}`}>Baseline: Yes</Text>
           </Pressable>
-          <Pressable onPress={() => setMeta({ baseline: false })} className={`flex-1 rounded-xl px-3 py-3 ${!baseline ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}>
+          <Pressable onPress={() => setMeta({ baseline: false })} className={`flex-1 rounded-lg px-3 py-3 ${!baseline ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}>
             <Text className={`text-center text-sm font-semibold ${!baseline ? 'text-white' : 'text-brand-700'}`}>Baseline: No</Text>
           </Pressable>
         </View>
@@ -39,27 +39,27 @@ export default function InspectSetupScreen() {
         <View className="mb-4 flex-row gap-2">
           <Pressable
             onPress={() => setMeta({ jointInspection: true })}
-            className={`flex-1 rounded-xl px-3 py-3 ${jointInspection ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
+            className={`flex-1 rounded-lg px-3 py-3 ${jointInspection ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
           >
             <Text className={`text-center text-sm font-semibold ${jointInspection ? 'text-white' : 'text-brand-700'}`}>Joint: Yes</Text>
           </Pressable>
           <Pressable
             onPress={() => setMeta({ jointInspection: false })}
-            className={`flex-1 rounded-xl px-3 py-3 ${!jointInspection ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
+            className={`flex-1 rounded-lg px-3 py-3 ${!jointInspection ? 'bg-brand-600' : 'bg-brand-50 border border-brand-200'}`}
           >
             <Text className={`text-center text-sm font-semibold ${!jointInspection ? 'text-white' : 'text-brand-700'}`}>Joint: No</Text>
           </Pressable>
         </View>
 
         <Text className="mb-1 text-xs font-semibold uppercase text-slate-500">Inspection Date</Text>
-        <TextInput value={inspectionDate} onChangeText={(value) => setMeta({ inspectionDate: value })} className="mb-4 rounded-xl border border-slate-200 px-3 py-2" />
+        <TextInput value={inspectionDate} onChangeText={(value) => setMeta({ inspectionDate: value })} className="mb-4 rounded-lg border border-slate-200 px-3 py-2" />
 
         <Pressable
           onPress={() => {
             setStep(2);
             router.push('/inspect/new/location');
           }}
-          className="rounded-xl bg-brand-600 py-3"
+          className="rounded-lg bg-brand-600 py-3"
         >
           <Text className="text-center text-sm font-semibold text-white">Start Inspecting</Text>
         </Pressable>

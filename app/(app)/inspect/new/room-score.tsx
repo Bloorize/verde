@@ -17,17 +17,17 @@ export default function InspectRoomScoreScreen() {
         <Text className="mb-2 text-base font-semibold text-slate-900">{t('Manual Score (1.0 - 5.0)')}</Text>
         <View className="mb-3 flex-row gap-2">
           {[1, 2, 3, 4, 5].map((score) => (
-            <Pressable key={score} onPress={() => setActiveRoomScore(score)} className={`h-10 w-10 items-center justify-center rounded-xl ${activeRoomScore === score ? 'bg-brand-600' : 'bg-slate-100'}`}>
+            <Pressable key={score} onPress={() => setActiveRoomScore(score)} className={`h-10 w-10 items-center justify-center rounded-lg ${activeRoomScore === score ? 'bg-brand-600' : 'bg-slate-100'}`}>
               <Text className={`font-semibold ${activeRoomScore === score ? 'text-white' : 'text-slate-700'}`}>{score}</Text>
             </Pressable>
           ))}
         </View>
 
         <Text className="mb-1 text-xs font-semibold uppercase text-slate-500">{t('Notes')}</Text>
-        <TextInput value={notes} onChangeText={setNotes} multiline className="mb-4 rounded-xl border border-slate-200 px-3 py-2" />
+        <TextInput value={notes} onChangeText={setNotes} multiline className="mb-4 rounded-lg border border-slate-200 px-3 py-2" />
 
         <View className="flex-row gap-2">
-          <Pressable onPress={addCompletedRoom} className="flex-1 rounded-xl border border-brand-200 bg-brand-50 py-3">
+          <Pressable onPress={addCompletedRoom} className="flex-1 rounded-lg border border-brand-200 bg-brand-50 py-3">
             <Text className="text-center text-sm font-semibold text-brand-700">{t('Save & Continue Room')}</Text>
           </Pressable>
           <Pressable
@@ -36,7 +36,7 @@ export default function InspectRoomScoreScreen() {
               setStep(5);
               router.push('/inspect/new/summary');
             }}
-            className="flex-1 rounded-xl bg-brand-600 py-3"
+            className="flex-1 rounded-lg bg-brand-600 py-3"
           >
             <Text className="text-center text-sm font-semibold text-white">{t('Go to Summary')}</Text>
           </Pressable>

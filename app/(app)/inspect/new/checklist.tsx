@@ -25,7 +25,7 @@ export default function InspectChecklistScreen() {
       <Card>
         <View className="gap-3">
           {activeRoomItems.map((item) => (
-            <View key={item.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <View key={item.id} className="rounded-md border border-slate-200 bg-slate-50 p-3">
               <Text className="mb-2 text-sm font-semibold text-slate-800">
                 <DynamicLabel value={item.name} />
               </Text>
@@ -78,7 +78,7 @@ export default function InspectChecklistScreen() {
             router.push('/inspect/new/room-score');
           }}
           disabled={hasUnsetItems || hasMissingFailureReason}
-          className={`mt-4 rounded-xl py-3 ${!hasUnsetItems && !hasMissingFailureReason ? 'bg-brand-600' : 'bg-slate-300'}`}
+          className={`mt-4 rounded-lg py-3 ${!hasUnsetItems && !hasMissingFailureReason ? 'bg-brand-600' : 'bg-slate-300'}`}
         >
           <Text className="text-center text-sm font-semibold text-white">{t('Next: Room Score')}</Text>
         </Pressable>

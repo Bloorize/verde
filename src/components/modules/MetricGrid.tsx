@@ -21,7 +21,7 @@ export const MetricGrid = ({ title, metrics }: { title: string; metrics: Metric[
     </Text>
     <View className="flex-row flex-wrap gap-3">
       {metrics.map((metric) => (
-        <View key={metric.label} className="min-w-[45%] flex-1 rounded-xl bg-slate-50 px-3 py-3">
+        <View key={metric.label} className="min-w-[45%] flex-1 rounded-md bg-slate-50 px-3 py-3">
           <Text className="text-xs text-slate-500">
             <LocalizedLabel value={metric.label} />
           </Text>

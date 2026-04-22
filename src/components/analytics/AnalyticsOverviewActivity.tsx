@@ -107,7 +107,7 @@ const CountBadge = ({ value }: { value: number }) => {
   return (
     <View
       style={{ backgroundColor: tone.bg, borderColor: tone.border }}
-      className="h-6 min-w-8 items-center justify-center rounded-full border px-2"
+      className="h-6 min-w-8 items-center justify-center rounded border px-2"
     >
       <Text style={{ color: tone.text }} className="text-xs font-semibold">
         {value}
@@ -130,7 +130,7 @@ const ActivityTable = ({
       <Text className="text-base font-bold text-slate-900">{title}</Text>
       <Text className="mb-3 mt-1 text-xs text-slate-500">Activity tracking across different time periods</Text>
 
-      <View className="rounded-xl border border-slate-200 bg-slate-50">
+      <View className="rounded-md border border-slate-200 bg-slate-50">
         <View className="flex-row items-center border-b border-slate-200 px-3 py-2">
           <Text className="flex-1 text-xs font-semibold text-slate-500">Name</Text>
           <Text className="w-16 text-center text-[11px] font-semibold text-slate-500">Last 3 Days</Text>
@@ -181,7 +181,7 @@ export const AnalyticsOverviewActivity = () => {
             <Pressable
               key={tab.id}
               onPress={() => setActiveTab(tab.id)}
-              className={`min-h-10 flex-row items-center gap-2 rounded-xl border px-3 ${
+              className={`min-h-10 flex-row items-center gap-2 rounded-lg border px-3 ${
                 selected ? 'border-brand-200 bg-brand-50' : 'border-slate-200 bg-white'
               }`}
             >

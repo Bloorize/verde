@@ -22,8 +22,8 @@ export default function SidebarContent({ menuItems, activePath, onItemClick }: S
   return (
     <motion.div
       initial={false}
-      animate={{ width: isCollapsed ? '5rem' : '18rem' }}
-      transition={{ width: { type: 'spring', stiffness: 280, damping: 30 } }}
+      animate={{ width: isCollapsed ? '5rem' : '16rem' }}
+      transition={{ width: { duration: 0.15, ease: 'easeOut' } }}
       className="ai-sidebar-shell"
     >
       <aside className="ai-sidebar">

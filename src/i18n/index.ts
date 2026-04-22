@@ -1,7 +1,7 @@
 import { createInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 
-import { getDeviceLanguage, SupportedLanguage } from '@/src/lib/language';
+import { SupportedLanguage } from '@/src/lib/language';
 
 import { resources } from './resources';
 
@@ -15,7 +15,7 @@ export const initializeI18n = async (): Promise<typeof i18n> => {
 
   await i18n.use(initReactI18next).init({
     resources,
-    lng: getDeviceLanguage(),
+    lng: 'en',
     fallbackLng: 'en',
     interpolation: {
       escapeValue: false,

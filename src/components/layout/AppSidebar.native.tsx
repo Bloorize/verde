@@ -20,7 +20,7 @@ const secondaryNav = [
   { label: 'Documents', route: '/documents', icon: 'document-text-outline' },
   { label: 'Service Coverage', route: '/service-coverage', icon: 'qr-code-outline' },
   { label: 'Profile', route: '/profile', icon: 'person-circle-outline' },
-  { label: 'Safety Portal', route: '/public/safety', icon: 'shield-checkmark-outline' },
+  { label: 'Safety Portal', route: '/safety', icon: 'shield-checkmark-outline' },
 ] as const;
 
 interface AppSidebarProps {
@@ -46,7 +46,7 @@ export const AppSidebar = ({ compact = false, onNavigate }: AppSidebarProps) => 
           }
           onNavigate?.();
         }}
-        className={`min-h-11 flex-row items-center gap-3 rounded-xl px-3 ${active ? 'bg-brand-700' : 'bg-transparent'}`}
+        className={`min-h-11 flex-row items-center gap-3 rounded-lg px-3 ${active ? 'bg-brand-700' : 'bg-transparent'}`}
       >
         <Ionicons name={item.icon} size={18} color={active ? '#ffffff' : '#c3d7cc'} />
         <Text className={`text-sm font-semibold ${active ? 'text-white' : 'text-brand-100'}`}>{item.label}</Text>

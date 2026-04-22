@@ -16,7 +16,7 @@ export default function TrainingSessionsScreen() {
         <View className="gap-2">
           {query.data?.map((session) => (
             <Link href={`/team/training/${session.id}` as any} key={session.id} asChild>
-              <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
                 <Text className="text-sm font-semibold text-slate-900">{session.instructor}</Text>
                 <Text className="text-xs text-slate-500">{session.date} • Attendees {session.attendees}</Text>
               </Pressable>

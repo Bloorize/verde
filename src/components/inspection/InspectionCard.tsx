@@ -21,7 +21,7 @@ export const InspectionCard = ({ inspection, onPress }: InspectionCardProps) => 
       <Card>
         <View className="mb-3 flex-row items-center justify-between">
           <View className="flex-row items-center gap-3">
-            <View className="h-10 w-10 items-center justify-center rounded-xl bg-brand-700">
+            <View className="h-10 w-10 items-center justify-center rounded-lg bg-brand-700">
               <Text className="text-xs font-bold text-white">{inspection.inspectorAvatar}</Text>
             </View>
             <View>
@@ -52,7 +52,7 @@ export const InspectionCard = ({ inspection, onPress }: InspectionCardProps) => 
 
         <View className="gap-2">
           {inspection.rooms.slice(0, 3).map((room) => (
-            <View key={room.id} className="flex-row items-center justify-between rounded-xl bg-brand-50 px-3 py-2">
+            <View key={room.id} className="flex-row items-center justify-between rounded-md bg-brand-50 px-3 py-2">
               <View>
                 <Text className="text-xs font-semibold text-slate-700">{room.name}</Text>
                 <Text className="text-[11px] text-slate-500">

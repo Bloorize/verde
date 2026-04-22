@@ -29,7 +29,7 @@ export const WorkItemList = ({ filter }: { filter: 'Open' | 'Closed' | 'Overdue'
       <View className="gap-2">
         {query.data?.map((item) => (
           <Link key={item.id} href={`/work-items/${item.id}` as any} asChild>
-            <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
               <View className="mb-1 flex-row items-center justify-between gap-2">
                 <Text className="flex-1 text-sm font-semibold text-slate-900">{item.title}</Text>
                 <Badge label={item.priority} tone={item.priority === 'Critical' ? 'danger' : item.priority === 'High' ? 'warning' : 'neutral'} />

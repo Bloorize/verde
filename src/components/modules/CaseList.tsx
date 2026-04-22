@@ -25,7 +25,7 @@ export const CaseList = ({ status }: { status: 'active' | 'closed' }) => {
       <View className="gap-2">
         {filtered?.map((item) => (
           <Link key={item.id} href={`/cases/${item.id}` as any} asChild>
-            <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+            <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
               <Text className="text-sm font-semibold text-slate-900">{item.title}</Text>
               <View className="mt-1 flex-row items-center justify-between">
                 <Badge label={item.type} />

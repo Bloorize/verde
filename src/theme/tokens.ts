@@ -14,18 +14,18 @@ export const themeTokens = {
     success: '#2f7a58',
   },
   radius: {
-    sm: 8,
-    md: 12,
-    lg: 16,
-    xl: 20,
+    sm: 4,
+    md: 6,
+    lg: 8,
+    xl: 12,
   },
   shadow: {
     card: {
       shadowColor: '#0d2118',
-      shadowOpacity: 0.08,
-      shadowRadius: 14,
-      shadowOffset: { width: 0, height: 6 },
-      elevation: 3,
+      shadowOpacity: 0.04,
+      shadowRadius: 4,
+      shadowOffset: { width: 0, height: 1 },
+      elevation: 1,
     },
   },
 } as const;

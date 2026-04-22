@@ -16,7 +16,7 @@ export default function TrainingCoursesScreen() {
         <View className="gap-2">
           {query.data?.map((course) => (
             <Link href={`/team/training/${course.id}` as any} key={course.id} asChild>
-              <Pressable className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+              <Pressable className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2">
                 <Text className="text-sm font-semibold text-slate-900">{course.title}</Text>
                 <Text className="text-xs text-slate-500">{course.category} • {course.duration}</Text>
               </Pressable>

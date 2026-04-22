@@ -39,7 +39,7 @@ export default function HomeDashboardScreen() {
             <Text className="text-xs text-slate-500">{t('Sage Score')}</Text>
             <Text className="text-3xl font-bold text-brand-700">{metrics?.sageScore ?? '--'}</Text>
           </View>
-          <View className="rounded-full bg-brand-100 px-3 py-1">
+          <View className="rounded bg-brand-100 px-3 py-1">
             <Text className="text-xs font-semibold text-brand-700">
               +{metrics?.inspectionTrend ?? 0}% {t('trend')}
             </Text>
@@ -48,11 +48,11 @@ export default function HomeDashboardScreen() {
         <View className="mt-4 gap-2">
           <Text className="text-xs font-semibold uppercase tracking-wider text-slate-500">{t('Suggestions')}</Text>
           {metrics?.suggestions.map((suggestion) => (
-            <View key={suggestion} className="rounded-xl bg-brand-50 px-3 py-2">
+            <View key={suggestion} className="rounded-md bg-brand-50 px-3 py-2">
               <Text className="text-sm text-slate-700">{suggestion}</Text>
             </View>
           ))}
-          <View className="rounded-xl bg-amber-100 px-3 py-2">
+          <View className="rounded-md bg-amber-100 px-3 py-2">
             <Text className="text-sm font-semibold text-amber-800">{metrics?.workItemAgingAlert}</Text>
           </View>
         </View>
