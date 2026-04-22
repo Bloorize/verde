@@ -2,6 +2,7 @@ import AISidebar from '@/components/ai-sidebar/Sidebar';
 import type { SidebarMenuGroup } from '@/components/ai-sidebar/types';
 import { usePathname, useRouter } from 'expo-router';
 import {
+  Album,
   BarChart3,
   Briefcase,
   ClipboardCheck,
@@ -40,6 +41,7 @@ const MENU_ITEMS: SidebarMenuGroup[] = [
     title: 'Workspace',
     list: [
       { name: 'Ask Sage', route: '/ask-sage', icon: Sparkles },
+      { name: 'Prototypes', route: '/prototypes', icon: Album },
       { name: 'Surveys', route: '/surveys', icon: ClipboardCheck },
       { name: 'Documents', route: '/documents', icon: FileText },
       { name: 'Service Coverage', route: '/service-coverage', icon: QrCode },

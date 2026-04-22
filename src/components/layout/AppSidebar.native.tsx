@@ -16,6 +16,7 @@ const primaryNav = [
 
 const secondaryNav = [
   { label: 'Ask Sage', route: '/ask-sage', icon: 'sparkles-outline' },
+  { label: 'Prototypes', route: '/prototypes', icon: 'albums-outline' },
   { label: 'Surveys', route: '/surveys', icon: 'clipboard-outline' },
   { label: 'Documents', route: '/documents', icon: 'document-text-outline' },
   { label: 'Service Coverage', route: '/service-coverage', icon: 'qr-code-outline' },
