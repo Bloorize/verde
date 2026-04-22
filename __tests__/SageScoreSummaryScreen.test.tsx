@@ -20,24 +20,28 @@ describe('SageScoreSummaryScreen', () => {
     mockUseLocalizedText.mockImplementation((value: string) => value);
   });
 
-  it('renders the key static score, metrics, highlights, and narrative content', () => {
-    const { getByText } = render(<SageScoreSummaryScreen />);
+  it('renders the mockup copy with all card detail sections visible', () => {
+    const { getByLabelText, getByText } = render(<SageScoreSummaryScreen />);
 
-    expect(getByText('Overall score')).toBeTruthy();
-    expect(getByText('87')).toBeTruthy();
-    expect(getByText('+2 vs last month')).toBeTruthy();
-    expect(getByText('Inspection coverage')).toBeTruthy();
-    expect(getByText('87%')).toBeTruthy();
-    expect(getByText('Regional highlights')).toBeTruthy();
+    expect(getByText('Regional Dashboard')).toBeTruthy();
+    expect(getByText(/All Sites - Southwest Region/)).toBeTruthy();
+    expect(getByLabelText('Refresh insights')).toBeTruthy();
+    expect(getByText('Estrella Community College')).toBeTruthy();
+    expect(getByText('88')).toBeTruthy();
+    expect(getByText('ASU Downtown')).toBeTruthy();
+    expect(getByText('72')).toBeTruthy();
+    expect(getByText('94%')).toBeTruthy();
+    expect(getByText('76%')).toBeTruthy();
+    expect(getByText('91%')).toBeTruthy();
     expect(
       getByText(
-        'ASU Downtown remains the main drag on the regional score because two work items are still overdue.',
+        'Joint inspection frequency is below the monthly target and a safety incident from last week is still in review. Two overdue work items in Building B are pulling the score down.',
       ),
     ).toBeTruthy();
-    expect(getByText('Narrative summary')).toBeTruthy();
+    expect(getByText('Regional Summary')).toBeTruthy();
     expect(
       getByText(
-        'The region ended the month stronger overall, but the score is still being held back by unresolved follow-up work at ASU Downtown. The cleanest next gain is to close overdue items there while keeping Palm Springs on its preventive maintenance plan.',
+        'Across all 3 sites, inspection coverage averaged 87% this month. ASU Downtown needs immediate attention on overdue work items and the open safety incident.',
       ),
     ).toBeTruthy();
   });
@@ -45,19 +49,20 @@ describe('SageScoreSummaryScreen', () => {
   it('routes visible score summary copy through the localization hook', () => {
     mockUseLocalizedText.mockImplementation((value: string) => `t:${value}`);
 
-    const { getByText, queryByText } = render(<SageScoreSummaryScreen />);
+    const { getAllByText, getByText, queryByText, getByLabelText } = render(<SageScoreSummaryScreen />);
 
-    expect(getByText('t:Overall score')).toBeTruthy();
-    expect(getByText('t:+2 vs last month')).toBeTruthy();
-    expect(getByText('t:Inspection coverage')).toBeTruthy();
-    expect(getByText('t:Regional highlights')).toBeTruthy();
-    expect(getByText('t:Narrative summary')).toBeTruthy();
+    expect(getByText('t:Regional Dashboard')).toBeTruthy();
+    expect(getByText(/t:Refresh insights/)).toBeTruthy();
+    expect(getByText(/t:All Sites - Southwest Region/)).toBeTruthy();
+    expect(getByText('t:Regional Summary')).toBeTruthy();
+    expect(getAllByText('t:Inspection Coverage')).toHaveLength(3);
+    expect(getByText('t:76%')).toBeTruthy();
     expect(
       getByText(
-        't:The region ended the month stronger overall, but the score is still being held back by unresolved follow-up work at ASU Downtown. The cleanest next gain is to close overdue items there while keeping Palm Springs on its preventive maintenance plan.',
+        't:Across all 3 sites, inspection coverage averaged 87% this month. ASU Downtown needs immediate attention on overdue work items and the open safety incident.',
       ),
     ).toBeTruthy();
-    expect(queryByText('Overall score')).toBeNull();
-    expect(queryByText('Narrative summary')).toBeNull();
+    expect(queryByText('Regional Dashboard')).toBeNull();
+    expect(queryByText('Regional Summary')).toBeNull();
   });
 });

@@ -1,34 +1,70 @@
 export const sageScoreSummary = {
-  headerTitle: 'Sage Score Summary',
-  headerSubtitle: 'Southwest Region - March 2026',
-  scoreTitle: 'Overall score',
-  scoreValue: '87',
-  scoreTrend: '+2 vs last month',
-  scoreContext: 'Average performance across three active demo sites.',
-  metrics: [
+  slideKicker: 'HeySage - Regional Manager',
+  slideTitle: 'SAGE Score Natural Language Summary',
+  slideSubtitle:
+    'Instead of just a number, AI explains exactly why each site scored the way it did - in plain English.',
+  url: 'app.heysage.com/home',
+  siteSelector: 'All Sites - Southwest Region',
+  refreshLabel: 'Refresh insights',
+  pageTitle: 'Regional Dashboard',
+  pageSubtitle: 'Southwest Region - March 2026',
+  sidebarItems: [
+    { id: 'home', label: 'Home', active: true },
+    { id: 'inspections', label: 'Inspections' },
+    { id: 'work-items', label: 'Work Items' },
+    { id: 'reports', label: 'Reports' },
+    { id: 'settings', label: 'Settings' },
+  ],
+  cards: [
     {
-      label: 'Inspection coverage',
-      value: '87%',
-      note: 'Regional average this month',
+      id: 'estrella',
+      siteName: 'Estrella Community College',
+      score: '88',
+      scoreTone: 'green',
+      trendDirection: 'up',
+      trendValue: '+3',
+      summary:
+        'Inspection coverage is strong at 94% and all work items are current. Daily lobby touchpoints are driving consistent scores across high-traffic areas.',
+      details: [
+        { value: '94%', label: 'Inspection Coverage' },
+        { value: '0', label: 'Overdue Items' },
+        { value: '0', label: 'Safety Incidents' },
+      ],
     },
     {
-      label: 'Overdue items',
-      value: '2',
-      note: 'Both tied to one site',
+      id: 'asu',
+      siteName: 'ASU Downtown',
+      score: '72',
+      scoreTone: 'amber',
+      trendDirection: 'down',
+      trendValue: '-5',
+      summary:
+        'Joint inspection frequency is below the monthly target and a safety incident from last week is still in review. Two overdue work items in Building B are pulling the score down.',
+      details: [
+        { value: '76%', label: 'Inspection Coverage' },
+        { value: '2', label: 'Overdue Items', valueTone: 'amber' },
+        { value: '1', label: 'Safety Incidents', valueTone: 'red' },
+      ],
     },
     {
-      label: 'Open safety incidents',
-      value: '1',
-      note: 'Still under review',
+      id: 'palmsprings',
+      siteName: 'Palm Springs Medical',
+      score: '81',
+      scoreTone: 'amber',
+      trendDirection: 'up',
+      trendValue: '+1',
+      summary:
+        'Steady improvement driven by resolved backlog in Q1. One recurring grout issue in the east wing restrooms needs a preventive maintenance plan.',
+      details: [
+        { value: '91%', label: 'Inspection Coverage' },
+        { value: '0', label: 'Overdue Items' },
+        { value: '0', label: 'Safety Incidents' },
+      ],
     },
   ],
-  highlightsTitle: 'Regional highlights',
-  highlights: [
-    'Estrella Community College stayed strong with 94% inspection coverage and no overdue work.',
-    'ASU Downtown remains the main drag on the regional score because two work items are still overdue.',
-    'Palm Springs Medical improved after clearing its Q1 backlog, but one restroom issue still needs preventive planning.',
-  ],
-  narrativeTitle: 'Narrative summary',
-  narrative:
-    'The region ended the month stronger overall, but the score is still being held back by unresolved follow-up work at ASU Downtown. The cleanest next gain is to close overdue items there while keeping Palm Springs on its preventive maintenance plan.',
+  viewDetailsLabel: 'View details ->',
+  sageChipLabel: 'SAGE',
+  regionalSummaryLabel: 'Regional Summary',
+  regionalSummaryText:
+    'Across all 3 sites, inspection coverage averaged 87% this month. ASU Downtown needs immediate attention on overdue work items and the open safety incident.',
 } as const;
