@@ -7,7 +7,7 @@ import { useSidebar } from './SidebarContext';
 export default function SidebarHeader() {
   const { isCollapsed, toggleCollapse } = useSidebar();
   const logoUri = Asset.fromModule(
-    isCollapsed ? require('../../assets/images/verde_logo_square.png') : require('../../assets/ruxton_logo_clear.png'),
+    isCollapsed ? require('../../assets/images/verde_logo_square.png') : require('../../assets/verde_logo.png'),
   ).uri;
 
   return (

@@ -1,5 +1,7 @@
 import { Text, View } from 'react-native';
 
+import { useLocalizedText } from '@/src/hooks/useLocalizedText';
+
 interface BadgeProps {
   label: string;
   tone?: 'neutral' | 'success' | 'warning' | 'danger';
@@ -12,8 +14,12 @@ const toneClass: Record<NonNullable<BadgeProps['tone']>, string> = {
   danger: 'bg-rose-100 text-rose-700',
 };
 
-export const Badge = ({ label, tone = 'neutral' }: BadgeProps) => (
-  <View className={`self-start rounded-full px-2.5 py-1 ${toneClass[tone]}`}>
-    <Text className="text-xs font-semibold">{label}</Text>
-  </View>
-);
+export const Badge = ({ label, tone = 'neutral' }: BadgeProps) => {
+  const localizedLabel = useLocalizedText(label);
+
+  return (
+    <View className={`self-start rounded-full px-2.5 py-1 ${toneClass[tone]}`}>
+      <Text className="text-xs font-semibold">{localizedLabel}</Text>
+    </View>
+  );
+};

@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { Pressable, Text, TextInput, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 import { Card } from '@/src/components/ui/Card';
 import { PageScaffold } from '@/src/components/shell/PageScaffold';
@@ -9,6 +10,7 @@ import { queryKeys } from '@/src/lib/queryKeys';
 import { useAppStore } from '@/src/store/appStore';
 
 export default function InspectLocationScreen() {
+  const { t } = useTranslation();
   const router = useRouter();
   const selectedSiteId = useAppStore((state) => state.selectedSiteId);
   const { buildingId, floorId, spaceTypeId, roomIdentifier, setLocation, setStep } = useAppStore();
@@ -24,7 +26,7 @@ export default function InspectLocationScreen() {
   return (
     <PageScaffold title="Step 2: Location" description="Select building, floor, space type, and room identifier.">
       <Card>
-        <Text className="mb-2 text-xs font-semibold uppercase text-slate-500">Building</Text>
+        <Text className="mb-2 text-xs font-semibold uppercase text-slate-500">{t('Building')}</Text>
         <View className="mb-3 flex-row flex-wrap gap-2">
           {config?.buildings.map((building) => (
             <Pressable
@@ -37,7 +39,7 @@ export default function InspectLocationScreen() {
           ))}
         </View>
 
-        <Text className="mb-2 text-xs font-semibold uppercase text-slate-500">Floor</Text>
+        <Text className="mb-2 text-xs font-semibold uppercase text-slate-500">{t('Floor')}</Text>
         <View className="mb-3 flex-row flex-wrap gap-2">
           {floors.map((floor) => (
             <Pressable
@@ -50,7 +52,7 @@ export default function InspectLocationScreen() {
           ))}
         </View>
 
-        <Text className="mb-2 text-xs font-semibold uppercase text-slate-500">Space Type</Text>
+        <Text className="mb-2 text-xs font-semibold uppercase text-slate-500">{t('Space Type')}</Text>
         <View className="mb-3 flex-row flex-wrap gap-2">
           {config?.spaceTypes.map((spaceType) => (
             <Pressable
@@ -63,7 +65,7 @@ export default function InspectLocationScreen() {
           ))}
         </View>
 
-        <Text className="mb-1 text-xs font-semibold uppercase text-slate-500">Room identifier</Text>
+        <Text className="mb-1 text-xs font-semibold uppercase text-slate-500">{t('Room identifier')}</Text>
         <TextInput value={roomIdentifier} onChangeText={(value) => setLocation({ roomIdentifier: value })} className="mb-4 rounded-xl border border-slate-200 px-3 py-2" />
 
         <Pressable
@@ -74,7 +76,7 @@ export default function InspectLocationScreen() {
           disabled={!buildingId || !floorId || !spaceTypeId || !roomIdentifier}
           className={`rounded-xl py-3 ${buildingId && floorId && spaceTypeId && roomIdentifier ? 'bg-brand-600' : 'bg-slate-300'}`}
         >
-          <Text className="text-center text-sm font-semibold text-white">Next</Text>
+          <Text className="text-center text-sm font-semibold text-white">{t('Next')}</Text>
         </Pressable>
       </Card>
     </PageScaffold>

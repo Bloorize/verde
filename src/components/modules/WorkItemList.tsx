@@ -6,15 +6,22 @@ import { Badge } from '@/src/components/ui/Badge';
 import { Card } from '@/src/components/ui/Card';
 import { mockSupabase } from '@/src/lib/mockSupabase';
 import { queryKeys } from '@/src/lib/queryKeys';
+import { translateWorkItem } from '@/src/lib/translation/translateRecords';
 import { useAppStore } from '@/src/store/appStore';
 
 export const WorkItemList = ({ filter }: { filter: 'Open' | 'Closed' | 'Overdue' | 'Mine' }) => {
   const selectedSiteId = useAppStore((state) => state.selectedSiteId);
   const currentUser = useAppStore((state) => state.currentUser);
+  const language = useAppStore((state) => state.language);
 
   const query = useQuery({
-    queryKey: queryKeys.workItems(selectedSiteId, filter),
-    queryFn: async () => (await mockSupabase.listWorkItems(selectedSiteId, { filter, currentUserName: currentUser.name })).data,
+    queryKey: queryKeys.workItems(selectedSiteId, filter, language),
+    queryFn: async () =>
+      Promise.all(
+        (await mockSupabase.listWorkItems(selectedSiteId, { filter, currentUserName: currentUser.name })).data.map((item) =>
+          translateWorkItem(item, language),
+        ),
+      ),
   });
 
   return (

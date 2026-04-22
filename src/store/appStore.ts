@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 
 import { inspectionChecklistItems } from '@/src/data/checklist';
+import { persistLanguage, getDeviceLanguage, loadStoredLanguage, SupportedLanguage } from '@/src/lib/language';
+import { setI18nLanguage } from '@/src/i18n';
 import { mockSites, mockSpaceTypes } from '@/src/data/mockData';
 import { CurrentUser, InspectionFailureReason } from '@/src/types/domain';
 import { DraftInspectionItem, DraftInspectionRoom, InspectionType } from '@/src/types/wizard';
@@ -10,11 +12,15 @@ interface UiSlice {
   isMobileNavOpen: boolean;
   isAskSageOpen: boolean;
   notificationCount: number;
+  language: SupportedLanguage;
+  isLanguageHydrated: boolean;
   setSelectedSiteId: (siteId: string) => void;
   setMobileNavOpen: (open: boolean) => void;
   setAskSageOpen: (open: boolean) => void;
   toggleAskSage: () => void;
   toggleMobileNav: () => void;
+  setLanguage: (language: SupportedLanguage) => Promise<void>;
+  hydrateLanguage: () => Promise<void>;
 }
 
 interface SessionSlice {
@@ -83,11 +89,28 @@ export const useAppStore = create<AppStore>()((set, get) => ({
   isMobileNavOpen: false,
   isAskSageOpen: false,
   notificationCount: 4,
+  language: getDeviceLanguage(),
+  isLanguageHydrated: false,
   setSelectedSiteId: (selectedSiteId) => set({ selectedSiteId }),
   setMobileNavOpen: (isMobileNavOpen) => set({ isMobileNavOpen }),
   setAskSageOpen: (isAskSageOpen) => set({ isAskSageOpen }),
   toggleAskSage: () => set({ isAskSageOpen: !get().isAskSageOpen }),
   toggleMobileNav: () => set({ isMobileNavOpen: !get().isMobileNavOpen }),
+  setLanguage: async (language) => {
+    set({ language });
+    await Promise.all([setI18nLanguage(language), persistLanguage(language)]);
+  },
+  hydrateLanguage: async () => {
+    if (get().isLanguageHydrated) {
+      return;
+    }
+
+    const storedLanguage = await loadStoredLanguage();
+    const language = storedLanguage ?? getDeviceLanguage();
+
+    set({ language, isLanguageHydrated: true });
+    await setI18nLanguage(language);
+  },
 
   isAuthenticated: false,
   currentUser: {

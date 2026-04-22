@@ -1,6 +1,11 @@
-export const formatTimestamp = (value: string): string => {
+import { SupportedLanguage } from '@/src/lib/language';
+import { getActiveLanguage } from '@/src/i18n';
+
+const getLocaleTag = (language?: SupportedLanguage): string => (language ?? getActiveLanguage()) === 'es' ? 'es-ES' : 'en-US';
+
+export const formatTimestamp = (value: string, language?: SupportedLanguage): string => {
   const date = new Date(value);
-  return date.toLocaleString(undefined, {
+  return date.toLocaleString(getLocaleTag(language), {
     month: 'short',
     day: 'numeric',
     hour: 'numeric',
@@ -8,9 +13,9 @@ export const formatTimestamp = (value: string): string => {
   });
 };
 
-export const formatDate = (value: string): string => {
+export const formatDate = (value: string, language?: SupportedLanguage): string => {
   const date = new Date(value);
-  return date.toLocaleDateString(undefined, {
+  return date.toLocaleDateString(getLocaleTag(language), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',

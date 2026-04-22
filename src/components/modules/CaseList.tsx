@@ -6,14 +6,16 @@ import { Badge } from '@/src/components/ui/Badge';
 import { Card } from '@/src/components/ui/Card';
 import { mockSupabase } from '@/src/lib/mockSupabase';
 import { queryKeys } from '@/src/lib/queryKeys';
+import { translateCaseRecord } from '@/src/lib/translation/translateRecords';
 import { useAppStore } from '@/src/store/appStore';
 
 export const CaseList = ({ status }: { status: 'active' | 'closed' }) => {
   const selectedSiteId = useAppStore((state) => state.selectedSiteId);
+  const language = useAppStore((state) => state.language);
 
   const query = useQuery({
-    queryKey: queryKeys.cases(selectedSiteId),
-    queryFn: () => mockSupabase.listCases(selectedSiteId),
+    queryKey: queryKeys.cases(selectedSiteId, language),
+    queryFn: async () => Promise.all((await mockSupabase.listCases(selectedSiteId)).map((item) => translateCaseRecord(item, language))),
   });
 
   const filtered = query.data?.filter((item) => (status === 'closed' ? item.status === 'Resolved' || item.status === 'Closed' : item.status !== 'Resolved' && item.status !== 'Closed'));

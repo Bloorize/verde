@@ -6,15 +6,18 @@ import { InspectionCard } from '@/src/components/inspection/InspectionCard';
 import { PageScaffold } from '@/src/components/shell/PageScaffold';
 import { mockSupabase } from '@/src/lib/mockSupabase';
 import { queryKeys } from '@/src/lib/queryKeys';
+import { translateInspection } from '@/src/lib/translation/translateRecords';
 import { useAppStore } from '@/src/store/appStore';
 
 export default function InspectionFeedScreen() {
   const router = useRouter();
   const selectedSiteId = useAppStore((state) => state.selectedSiteId);
+  const language = useAppStore((state) => state.language);
 
   const inspectionsQuery = useQuery({
-    queryKey: queryKeys.inspections(selectedSiteId),
-    queryFn: async () => (await mockSupabase.listInspections(selectedSiteId)).data,
+    queryKey: queryKeys.inspections(selectedSiteId, language),
+    queryFn: async () =>
+      Promise.all((await mockSupabase.listInspections(selectedSiteId)).data.map((inspection) => translateInspection(inspection, language))),
   });
 
   return (

@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Image,
   Pressable,
@@ -13,6 +14,7 @@ import {
 
 import { mockSupabase } from '@/src/lib/mockSupabase';
 import { queryKeys } from '@/src/lib/queryKeys';
+import { useLocalizedText } from '@/src/hooks/useLocalizedText';
 import { useAppStore } from '@/src/store/appStore';
 import { themeTokens } from '@/src/theme/tokens';
 
@@ -54,7 +56,18 @@ const suggestedPrompts = [
   'What should the manager do next?',
 ];
 
+const TranslatedMessageText = ({ value }: { value: string }) => {
+  const localizedValue = useLocalizedText(value, { alwaysTranslate: true });
+  return <>{localizedValue}</>;
+};
+
+const TranslatedStaticText = ({ value }: { value: string }) => {
+  const localizedValue = useLocalizedText(value);
+  return <>{localizedValue}</>;
+};
+
 export const AskSageWindow = () => {
+  const { t } = useTranslation();
   const { width, height } = useWindowDimensions();
   const [draftMessage, setDraftMessage] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
@@ -165,10 +178,10 @@ export const AskSageWindow = () => {
                   resizeMode="contain"
                 />
               </View>
-              <Text style={{ fontSize: 28, fontWeight: '700', color: '#0f5a4d' }}>Ask Sage</Text>
-              <Text style={{ marginTop: 6, fontSize: 15, color: '#185f52' }}>Sage AI Assistant</Text>
+              <Text style={{ fontSize: 28, fontWeight: '700', color: '#0f5a4d' }}>{t('Ask Sage')}</Text>
+              <Text style={{ marginTop: 6, fontSize: 15, color: '#185f52' }}>{t('Sage AI Assistant')}</Text>
               <Text style={{ marginTop: 14, fontSize: 13, lineHeight: 20, color: '#35685d' }}>
-                Site-aware assistant for inspections, work items, incidents, and operating recommendations.
+                {t('Site-aware assistant for inspections, work items, incidents, and operating recommendations.')}
               </Text>
             </View>
 
@@ -229,7 +242,7 @@ export const AskSageWindow = () => {
               ) : null}
 
               <View>
-                <Text style={{ fontSize: 24, fontWeight: '700', color: '#114f44' }}>Ask Sage</Text>
+                <Text style={{ fontSize: 24, fontWeight: '700', color: '#114f44' }}>{t('Ask Sage')}</Text>
                 <Text style={{ marginTop: 4, fontSize: 13, color: '#31675d' }}>{selectedSite}</Text>
               </View>
             </View>
@@ -270,7 +283,7 @@ export const AskSageWindow = () => {
                 }}
               >
                 <Text style={{ fontSize: 15, lineHeight: 22, color: '#1f6453' }}>
-                  How can I improve site health fastest this week?
+                  <TranslatedStaticText value="How can I improve site health fastest this week?" />
                 </Text>
               </View>
             </View>
@@ -317,7 +330,9 @@ export const AskSageWindow = () => {
                           backgroundColor: '#d8f0df',
                         }}
                       >
-                        <Text style={{ fontSize: 15, lineHeight: 22, color: '#1f6453' }}>{message.text}</Text>
+                        <Text style={{ fontSize: 15, lineHeight: 22, color: '#1f6453' }}>
+                          <TranslatedMessageText value={message.text} />
+                        </Text>
                       </View>
                     </View>
                   ) : (
@@ -333,7 +348,9 @@ export const AskSageWindow = () => {
                         backgroundColor: '#ffffff',
                       }}
                     >
-                      <Text style={{ fontSize: 15, lineHeight: 22, color: '#1f6453' }}>{message.text}</Text>
+                      <Text style={{ fontSize: 15, lineHeight: 22, color: '#1f6453' }}>
+                        <TranslatedMessageText value={message.text} />
+                      </Text>
                     </View>
                   )}
                 </View>
@@ -354,7 +371,9 @@ export const AskSageWindow = () => {
                     paddingVertical: 9,
                   }}
                 >
-                  <Text style={{ fontSize: 13, color: '#1f6453' }}>{prompt}</Text>
+                  <Text style={{ fontSize: 13, color: '#1f6453' }}>
+                    <TranslatedStaticText value={prompt} />
+                  </Text>
                 </Pressable>
               ))}
             </View>
@@ -384,7 +403,7 @@ export const AskSageWindow = () => {
                 value={draftMessage}
                 onChangeText={setDraftMessage}
                 onSubmitEditing={() => pushMessage(draftMessage)}
-                placeholder="How can I help you today?"
+                placeholder={t('How can I help you today?')}
                 placeholderTextColor="#8bb5a8"
                 style={{
                   flex: 1,

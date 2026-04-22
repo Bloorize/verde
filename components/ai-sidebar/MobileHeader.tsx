@@ -5,7 +5,7 @@ import { useSidebar } from './SidebarContext';
 
 export default function MobileHeader() {
   const { closeMobileMenu } = useSidebar();
-  const logoUri = Asset.fromModule(require('../../assets/ruxton_logo_clear.png')).uri;
+  const logoUri = Asset.fromModule(require('../../assets/verde_logo.png')).uri;
 
   return (
     <div className="ai-mobile-header">

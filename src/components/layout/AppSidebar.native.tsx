@@ -58,7 +58,7 @@ export const AppSidebar = ({ compact = false, onNavigate }: AppSidebarProps) => 
     <View className={`bg-brand-900 ${compact ? 'w-72' : 'w-64'} px-4 py-5`}>
       <View className="mb-6 flex-row items-center gap-3 px-2">
         <View className="h-10 w-14 items-center justify-center">
-          <Image source={require('../../../assets/ruxton_logo_clear.png')} style={{ width: 48, height: 30 }} resizeMode="contain" />
+          <Image source={require('../../../assets/verde_logo.png')} style={{ width: 48, height: 30 }} resizeMode="contain" />
         </View>
         <View>
           <Text className="text-base font-bold text-white">HeySage</Text>

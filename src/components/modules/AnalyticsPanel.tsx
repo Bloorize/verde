@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Text } from 'react-native';
 
 import { EChart } from '@/src/components/charts/EChart';
@@ -6,6 +7,7 @@ import { buildBarOption, buildLineOption } from '@/src/components/charts/echartO
 import { Card } from '@/src/components/ui/Card';
 import { mockSupabase } from '@/src/lib/mockSupabase';
 import { queryKeys } from '@/src/lib/queryKeys';
+import { translateAnalyticsPayload } from '@/src/lib/translation/translateRecords';
 import { useAppStore } from '@/src/store/appStore';
 
 type AnalyticsMetric =
@@ -28,10 +30,12 @@ const metricLabels: Record<AnalyticsMetric, string> = {
 };
 
 export const AnalyticsPanel = ({ metric, title }: { metric: AnalyticsMetric; title?: string }) => {
+  const { t } = useTranslation();
   const selectedSiteId = useAppStore((state) => state.selectedSiteId);
+  const language = useAppStore((state) => state.language);
   const query = useQuery({
-    queryKey: queryKeys.analytics(selectedSiteId),
-    queryFn: () => mockSupabase.getAnalyticsSeries(selectedSiteId),
+    queryKey: queryKeys.analytics(selectedSiteId, language),
+    queryFn: async () => translateAnalyticsPayload(await mockSupabase.getAnalyticsSeries(selectedSiteId), language),
   });
 
   const data = query.data?.[metric] ?? [];
@@ -39,11 +43,11 @@ export const AnalyticsPanel = ({ metric, title }: { metric: AnalyticsMetric; tit
 
   return (
     <Card>
-      <Text className="mb-3 text-base font-semibold text-slate-900">{title ?? metricLabels[metric]}</Text>
+      <Text className="mb-3 text-base font-semibold text-slate-900">{title ? t(title) : t(metricLabels[metric])}</Text>
       {data.length > 0 ? (
         <EChart option={isLine ? buildLineOption(data, '#2f7a58') : buildBarOption(data, '#2f7a58')} height={220} />
       ) : (
-        <Text className="text-sm text-slate-500">No data available for this metric.</Text>
+        <Text className="text-sm text-slate-500">{t('No data available for this metric.')}</Text>
       )}
     </Card>
   );
